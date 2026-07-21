@@ -31,8 +31,8 @@ Looking for those hashes in virustotal it is showed to us:
 
 Buscando estos hashes en virustotal nos aparece:
 
+<img width="639" height="476" alt="imagen" src="https://github.com/user-attachments/assets/f098861f-f83a-4472-a841-03efce541449" />
 
-![[2cad7d9f602c9626bbbeff974cee3fb6_MD5.jpg]]  
   
 
 ## 2 - Strings
