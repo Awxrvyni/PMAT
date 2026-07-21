@@ -258,13 +258,14 @@ Analyzing the sample in PEStudio, we can first see that it is written in Microso
 
 Al analizar la muestra en PEStudio se puede ver primeramente que está escrito en Microsoft Visual C++ v6.0 y es de 32-bits:
 
-![[fd0076c2b29eaba0bff7dfafeb25b694_MD5.jpg]]
+<img width="371" height="151" alt="imagen" src="https://github.com/user-attachments/assets/8459f981-2a64-4db6-be7e-085aa35bbc7f" />
 
 There are 91 imports listed, of which 30 are marked as potentially dangerous or suspicious:
 
 Figuran 91 imports, de los cuales 30 están marcados como potencialmente peligrosos o sospechosos:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/01.jpg]]
+<img width="356" height="249" alt="imagen" src="https://github.com/user-attachments/assets/f9c415be-38c2-4753-8556-5eed538d7aa9" />
+
 
 Among them are several that use ordinal import, a technique in which a PE imports functions from a DLL using the function's ordinal number instead of its name. This is also suspicious because it can be a form of light obfuscation when certain APIs are called.
 
@@ -274,7 +275,7 @@ However, this kind of technique could be used by legit software, because it redu
 
 De todas maneras este tipo de técnica también puede darse en software legítimo ya que hace que los binarios puedan ser más pequeños y a que mejora la velocidad de carga. Aunque no es común en software moderno.
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/02.jpg]]
+<img width="817" height="234" alt="imagen" src="https://github.com/user-attachments/assets/024f9c65-4261-4ed8-beb8-f1342d731917" />
 
 It can be seen by the name that those imports are related to the use of a socket, but it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means that those imports are related to the worm behaviour of wannacry.
 
@@ -284,7 +285,7 @@ Puede verse que por el nombre hacen referencia al uso de un socket, pero lo más
 
 Esta útil página [https://malapi.io/](https://malapi.io/) cuenta con una clasificación de determinadas apis a menudo usadas por malware, y señala qué uso se les suele dar. Estas son las presentes en la muestra y señaladas como sospechosas: 
 
-![[03.png]]
+<img width="2848" height="4683" alt="imagen" src="https://github.com/user-attachments/assets/964e2e2f-e8d4-471d-a302-68708bf6634a" />
 
 On one hand, APIs related with web communication:
 - *GetAdaptersInfo*: commonly used to obtain data about network adapters in the system.
