@@ -320,8 +320,7 @@ A 32-bits executable can be seen inside the sample, named as resource R:
 
 Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
-![[4b7127b664533fefd11a9309daa368ab_MD5.jpg]]
-
+<img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
 Then, calling things properly, Wannacry is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
 
@@ -337,7 +336,7 @@ As a killswitch, the sample tries to connect in the beginning with the following
 
 A modo de killswitch, intenta conectar al principio de todo con la URL  `hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com` 
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/24.jpg]]
+<img width="805" height="154" alt="imagen" src="https://github.com/user-attachments/assets/8f0e555c-e989-4cf3-aea4-b9bee0550773" />
 
 If the connection is successful, the malware stops and does not do any other process. That is what allowed to stop the attack back in May 2017, because the researcher Marcus Hutchins registered this domain, stopping the global propagation of the ransomware.
 
@@ -347,20 +346,21 @@ Then, if the connection is not successful and the payload starts, a lot of netwo
 
 Luego, si se empieza a ejecutar el payload, vemos que empieza a haber mucha actividad de red, esto es debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera sobre ese puerto, el **445**, y por lo tanto, para la explotación de **EternalBlue** es donde se debe apuntar.
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/11.jpg]]
+<img width="428" height="272" alt="imagen" src="https://github.com/user-attachments/assets/dc0fc126-9876-4481-a4ad-a79ecd31ad00" />
 
-![[785a69e9a4c69c07e237ac5e8511074a_MD5.jpg]]
+<img width="910" height="197" alt="imagen" src="https://github.com/user-attachments/assets/576e3455-c496-49dd-8feb-f06be9755146" />
 
 Different connections with localhost were started, by the processes `taskhsvc.exe` and `@WanaDecryptor@.exe`.
 
 Se inicia otra conexión con un proceso nuevo llamado `taskhsvc.exe` y otra con `@WanaDecryptor@.exe`, dirigidas al localhost.
 
-![[3063be9aa217534032fb264a8397c1ef_MD5.jpg]]
+<img width="892" height="78" alt="imagen" src="https://github.com/user-attachments/assets/3d851202-2e68-42f0-bd98-ec2e7e33e159" />
 
 That process establish the port 9050 in listen mode for every IP:
 
 Puede verse además que este proceso deja el puerto 9050 a la escucha para todas las IPs:
-![[ff776bb53b42f2b7c0256310b9a5c4c0_MD5.jpg]]
+
+<img width="894" height="66" alt="imagen" src="https://github.com/user-attachments/assets/92bb02bb-2f66-4516-9b83-75ef27875302" />
 
 I tried to connect to that port using netcat, with no success.
 
@@ -370,13 +370,13 @@ In order to make a try to capture the worm behaviour of WannaCry, I connected to
 
 Para intentar captar el comportamiento de gusano de WannaCry, he puesto en la red virtual una máquina Windows 7 vulnerable a EternalBlue:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/12.jpg]]
+<img width="646" height="245" alt="imagen" src="https://github.com/user-attachments/assets/b5b64c0c-98f8-4b48-876b-11a321da8350" />
 
 However, after many tries, I did not detect the network propagation of the malware. That, surely, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
 
 Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto seguramente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, he detectado que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20:
 
-![[13.jpg]]
+<img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/636fa03d-b363-40c5-9cec-2f96f92019c0" />
 
 This could suggest that the malware was developed in virtualbox, using his host-only mode, because it is the range of IPs that uses by default: 192.168.56.0/24
 
@@ -389,37 +389,37 @@ Our greatest ally in this section is procmon. First of all, the sample is execut
 
 Nuestro gran aliado en esta sección es procmon. Para empezar, se ejecuta la muestra como administrador y se establece como filtro el nombre de proceso que tendrá el ejecutable. Como se ha visto, este malware es un dropper, por lo que se establece como filtro *Operation is CreateFile* en procmon y se podrá ver el nombre que se le da a la segunda fase del malware y dónde se creará. Al establecer este filtro se ven muchos archivos como objetivo de wannacry, pero eso es sólo porque la API *CreateFile* sirve tanto como para crear archivos nuevos como para acceder a archivos en general:
 
-![[14.jpg]]
+<img width="438" height="184" alt="imagen" src="https://github.com/user-attachments/assets/6c70220e-fb2f-482b-8407-b381448b7288" />
 
 According to the capabilities of the API *CreateFile*, it is reasonable to think that the malware first of all verifies that exists a file called *taskche.exe*, presumably his second stage, in the path *C:\Windows*. If it is not found, it will create it, as suggested by the two consecutive highlighted operations and their respective results.
 
 Teniendo en cuenta las capacidades de la API *CreateFile*, es de suponer que el malware verifica primero la existencia de un archivo llamado *taskche.exe*, el cual presumiblemente es la segunda fase, en la ruta *C:\Windows*, y si no lo encuentra, lo crea, como puede inferirse de las dos operaciones sucesivas remarcadas y su resultado.
 
-![[15.jpg]]
+<img width="305" height="222" alt="imagen" src="https://github.com/user-attachments/assets/63503066-ff92-4120-a062-20afb4e90c46" />
 
 Having as a new clue the name of the second phase, it will be the next filter and the two previous filters are deleted. An operation involving a strange alphanumeric string can be seen:
 
 Sabiendo ahora cómo se llama la segunda fase, se establece como filtro para seguir investigando. Puede verse que hay una operación con un string alfanumérico extraño:
 
-![[16.jpg]]
+<img width="426" height="106" alt="imagen" src="https://github.com/user-attachments/assets/f74375df-037c-4bcd-a868-3ba3157467b4" />
 
 Which is a folder created by the payload:
 
 El cual es una carpeta que ha creado el payload:
 
-![[17.jpg]]
+<img width="401" height="178" alt="imagen" src="https://github.com/user-attachments/assets/1080e705-17a5-4a4d-a25c-fd9fb55a17b5" />
 
 Inside that directory are all the files within the compressed PKZIP file of the payload, and the file of the second stage itself (`tasksche.exe`):
 
 En dicha carpeta pueden verse todos los archivos que se encuentran dentro del archivo comprimido PKZIP del payload, así como el archivo que conforma la segunda fase (`tasksche.exe`):
 
-![[18.jpg]]
+<img width="325" height="476" alt="imagen" src="https://github.com/user-attachments/assets/bbdbc383-59f3-4457-81c9-c134a4d7e3c6" />
 
 Also 3 files with name 00000000. Analyzing the file with extension .pky it is shown that:
 
 También aparecen 3 archivos de nombre 00000000. Al analizar el de extensión .pky, puede verse lo siguiente:
 
-![[48.jpg]]
+<img width="638" height="232" alt="imagen" src="https://github.com/user-attachments/assets/a52815c9-b827-4657-a006-0c2a4a3acbb0" />
 
 The mention of the RSA cryptographic system and the similarity of the names suggest that these three files are essential during the data encryption process.
 
@@ -429,13 +429,13 @@ An interesting outcome is shown with the name of the directory as a filter in pr
 
 Al poner como filtro en procmon el nombre de la carpeta, se obtienen un resultado interesante:
 
-![[19.jpg]]
+<img width="486" height="52" alt="imagen" src="https://github.com/user-attachments/assets/795b135c-d004-4b9e-ac8b-4f07928460bf" />
 
 The creation of a new register named as the directory:
 
 La creación de un nuevo registro con el nombre de la carpeta creada y su posterior inicio. Yendo al registro:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/20.jpg]]
+<img width="602" height="206" alt="imagen" src="https://github.com/user-attachments/assets/e810bdf1-9433-40db-886e-8848b14e811d" />
 
 Which enables a service with the same name that executes the second stage. This a persistence mechanism that will execute it every time that the system starts, encrypting the new files created after the initial infection, trying to spread the malware again, etc.
 
@@ -445,13 +445,13 @@ Within services can be seen the persistence service created, which is stopped in
 
 En efecto, en servicios puede verse el servicio de persistencia creado, el cual se encuentra detenido al principio y cuenta con inicio automático:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/21.jpg]]
+<img width="383" height="371" alt="imagen" src="https://github.com/user-attachments/assets/67fdd899-c8d8-4b47-bc9c-c2797c6a5bf6" />
 
 Finally, the most obvious and evident host-indicators: all the files of the user are encrypted and unavailable. Moreover, the wallpaper was changed for another one with instructions to pay and that red window pop up with more detailed instructions for the payment:
 
 Por último, los indicadores de host más claros y evidentes: todos los archivos del usuario quedan encriptados y no se puede acceder a ellos. Además, el fondo de pantalla cambia a uno con instrucciones para pagar y aparece esta ventana con instrucciones más detalladas para el pago:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/22.jpg]]
+<img width="1541" height="669" alt="imagen" src="https://github.com/user-attachments/assets/7e546c70-4d88-4908-b2bb-442329d195cd" />
 
 While I was checking events in procmon in order to make this analysis, I realised that the window with instructions, named *Wana Decrypt0r 2.0*, pop up again and again every time when it was closed, being so annoying to the user. I found out that *tasksche.exe* always reopens the process. However, if *tasksche.exe* is killed, the windows will not open again so neither if the file *@WanaDecryptor@.exe* is deleted from the created directory by the malware.
 
@@ -461,7 +461,7 @@ Researching in procmon about this executable, I found that executes this command
 
 Investigando en procmon sobre este ejecutable, encontré que al iniciarse, ejecuta el siguiente comando:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/23.jpg]]
+<img width="838" height="368" alt="imagen" src="https://github.com/user-attachments/assets/092eeee3-3b90-411a-8cc2-e1df7b3a6eb5" />
 
 ```
 cmd.exe /c  
@@ -499,7 +499,7 @@ Thanks to advanced analysis, certain internal aspects of the sample can be showe
 
 Mediante el análisis avanzado se pueden ver ciertos aspectos de la muestra a nivel interno. Por ejemplo, el killswitch comentado en la sección de indicadores basados en red:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/25.jpg]]
+<img width="637" height="632" alt="imagen" src="https://github.com/user-attachments/assets/1de95c47-3ee0-43b7-967e-c5582f30de49" />
 
 In the red highlighted *1*, the string that contains the URL is provided to the esi register so it can be used as an argument. The calls for functions in *2* that will connect to the killswitch URL. After that, if there are no response from the website, the program will continue running the instructions in *3* normally. But if the request is answered, the instructions in *4* will be executed an the malware will stop and exit without any encryption of data.
 
@@ -509,19 +509,19 @@ It is also clear when it saves to disk his second stage, thanks to the different
 
 Por otra parte, puede verse también cuando guarda en disco el ejecutable que lleva en su interior, por diferentes llamadas a APIs que realiza para este fin. Primero, se ve cómo carga en registro los strings de las llamadas que va a hacer a las APIs para crear un archivo y escribir en él:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/26.jpg]]
+<img width="612" height="368" alt="imagen" src="https://github.com/user-attachments/assets/e7c8c192-1186-4167-abd6-a87aeb974a52" />
 
 Then, it uses these APIs to look for the resource, load it and obtain his pointer and size:
 
 Luego, hace uso de estas APIs para buscar el recurso, cargarlo, obtener su puntero y su tamaño:
 
-![[27.jpg]]
+<img width="482" height="632" alt="imagen" src="https://github.com/user-attachments/assets/a5154c42-ff2b-42ed-9744-99b5163743a2" />
 
 Finally, it is shown the future name of the file, the path where it will be saved, etc
 
 Para finalizar, se ve el nombre que se le va a poner al archivo, además de, por ejemplo, la ruta en que se va a guardar, etc:
 
-![[28.jpg]]
+<img width="305" height="419" alt="imagen" src="https://github.com/user-attachments/assets/8d894136-c1cf-41a0-bd71-19d379e4f1b7" />
 
 # Advanced dynamic analysis 
 
