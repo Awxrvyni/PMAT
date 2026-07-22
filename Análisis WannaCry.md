@@ -788,13 +788,13 @@ Trying to change the magic number to `MZ`, I do not observe any new information.
 
 Probando a cambiar el magic number por `MZ`, no se observa nueva información. No tengo claro para qué sirve este archivo, haría falta investigar más.
 
-- *taskdl.exe*: this executable has the following suspicious imports:
+- **taskdl.exe**: this executable has the following suspicious imports:
 	- **FindFirstFileW**
 	- **FindNextFileW**
 	- **DeleteFileW**
 The first two are used to find in directory and the third to delete files, so it is reasonable to think that the use of this executable is the deletion of files, possibly the user's files after their encryption.
 
-- *taskdl.exe*: este ejecutable cuenta con las siguientes imports sospechosas:
+- **taskdl.exe**: este ejecutable cuenta con las siguientes imports sospechosas:
 	- **FindFirstFileW**
 	- **FindNextFileW**
 	- **DeleteFileW**
@@ -805,6 +805,8 @@ Las dos primeras se usan para buscar en directorio y la tercera para el borrado 
 - **taskse.exe**: analizando este ejecutable en PEstudio o bien mirando sus strings, no se aprecia nada sospechoso. Mediante el análisis dinámico sí he podido figurarme cómo encaja en el gran esquema de las cosas, y pudiendo tener más funciones, se ve que está relacionado con el programa `@WanaDecryptor@.exe`. Este programa muestra una ventana al término de la ejecución del malware. Si se cierra esta ventana, el proceso activo `tasksche.exe` ejecuta  `taskse.exe` y este a su vez vuelve a ejecutar `@WanaDecryptor@.exe`. Esto ocurre aproximadamente cada 30 segundos, convirtiéndose en algo bastante molesto, a menos que se cierre el proceso principal `@WanaDecryptor@.exe` y el proceso  `tasksche.exe`, que es quien llama a `taskse.exe` cada vez. 
 
 <img width="244" height="79" alt="imagen" src="https://github.com/user-attachments/assets/9bcba2c4-7fb3-46eb-b9bf-3367d0ac6ba9" />
+
+
 
 <img width="245" height="97" alt="imagen" src="https://github.com/user-attachments/assets/d14c8157-bf6e-425b-91c0-a08149118f88" />
 
