@@ -1,6 +1,7 @@
 
 # Introduction
 
+
 This report is the conclusion of **PMAT (Practical Malware Analysis & Triage)** malware analysis course, which requires to analyze a real sample. I have chosen one of the most common kind of malware, a ransomware. And the luckiest chosen one to be dissected by me was the famous wannacry, which caused a lot of damage around the world in 2017.
 
 Este informe es la conclusión del curso de análisis de  malware **PMAT (Practical Malware Analysis & Triage)**, en el que se pide analizar una muestra real. He elegido uno de los tipos de malware más comunes, un ransomware. Y el afortunado malware elegido para ser diseccionado por mí ha sido el famoso Wannacry, que causó estragos allá por 2017. 
@@ -591,7 +592,7 @@ Keeping on with normal execution, the malware tries to take the next jump (*3*).
 
 Al seguir con la normal ejecución del programa, veo que intenta tomar el salto siguiente (*3*). Modifico el valor de la Zero Flag (ZF) de 1 a 0 para que no tome el salto: 
 
-<img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/2a982f09-9259-4caa-a1f0-7ebcdfa54c22" />
+<img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/2a982f09-9259-4caa-a1f0-7ebcdfa54c22" /><br/>
 
 <img width="199" height="82" alt="imagen" src="https://github.com/user-attachments/assets/9a869c4e-81c1-4dc9-90e3-fac68c2b99ec" />
 
@@ -698,20 +699,20 @@ These commands are posterior actions ran by the malware when the zip is extracte
 
  1. `attrib +h .`
 
-- `attrib` it is a command from windows usable to change attributes of files or folders.
-- `+h` means "to add the hidden attribute"
-- `.` current directory
+	- `attrib` it is a command from windows usable to change attributes of files or folders.
+	- `+h` means "to add the hidden attribute"
+	- `.` current directory
 
 This command hides the current directory where the malware dropped the second stage, to avoid that the user could view the files or that malware components could be easily detectable.
 
  2. `icacls . /grant Everyone:F /T /C /Q`
 
-- `icacls` manages permissions in Windows
-- `.`  current directory
-- `/grant Everyone:F`  grants full control permissions to the group “Everyone” (all users)
-- `/T`  applies it recursively to all files and subfolders
-- `/C`  continues even with errors
-- `/Q`  quiet mode
+	- `icacls` manages permissions in Windows
+	- `.`  current directory
+	- `/grant Everyone:F`  grants full control permissions to the group “Everyone” (all users)
+	- `/T`  applies it recursively to all files and subfolders
+	- `/C`  continues even with errors
+	- `/Q`  quiet mode
 
 It changes permissions of the entire current directory and his content in order to allow that any user (and process) to have full control and can act without restrictions.
 
@@ -719,20 +720,20 @@ Estos comandos son acciones posteriores que el malware ejecuta en el sistema una
 
  1. `attrib +h .`
 
-- `attrib` es un comando de Windows que sirve para cambiar atributos de archivos o carpetas
-- `+h` significa “añadir el atributo oculto” (hidden)
-- `.` se refiere al directorio actual
+	- `attrib` es un comando de Windows que sirve para cambiar atributos de archivos o carpetas
+	- `+h` significa “añadir el atributo oculto” (hidden)
+	- `.` se refiere al directorio actual
 
 Este comando oculta la carpeta actual donde se ha descomprimido el contenido del malware, para evitar que el usuario pueda ver los archivos o que los componentes del malware sean fácilmente detectables.
 
  2. `icacls . /grant Everyone:F /T /C /Q`
 
-- `icacls` gestiona permisos en Windows
-- `.`  directorio actual
-- `/grant Everyone:F`  concede permisos de control total (“Full”) al grupo “Everyone” (todos los usuarios)
-- `/T`  aplica recursivamente a todos los archivos y subcarpetas
-- `/C`  continúa aunque haya errores
-- `/Q`  modo silencioso
+	- `icacls` gestiona permisos en Windows
+	- `.`  directorio actual
+	- `/grant Everyone:F`  concede permisos de control total (“Full”) al grupo “Everyone” (todos los usuarios)
+	- `/T`  aplica recursivamente a todos los archivos y subcarpetas
+	- `/C`  continúa aunque haya errores
+	- `/Q`  modo silencioso
 
 Cambia los permisos de toda la carpeta y su contenido para que cualquier usuario (y proceso) tenga control total y pueda actuar sin restricciones.
 
@@ -804,9 +805,7 @@ Las dos primeras se usan para buscar en directorio y la tercera para el borrado 
 
 - **taskse.exe**: analizando este ejecutable en PEstudio o bien mirando sus strings, no se aprecia nada sospechoso. Mediante el análisis dinámico sí he podido figurarme cómo encaja en el gran esquema de las cosas, y pudiendo tener más funciones, se ve que está relacionado con el programa `@WanaDecryptor@.exe`. Este programa muestra una ventana al término de la ejecución del malware. Si se cierra esta ventana, el proceso activo `tasksche.exe` ejecuta  `taskse.exe` y este a su vez vuelve a ejecutar `@WanaDecryptor@.exe`. Esto ocurre aproximadamente cada 30 segundos, convirtiéndose en algo bastante molesto, a menos que se cierre el proceso principal `@WanaDecryptor@.exe` y el proceso  `tasksche.exe`, que es quien llama a `taskse.exe` cada vez. 
 
-<img width="244" height="79" alt="imagen" src="https://github.com/user-attachments/assets/9bcba2c4-7fb3-46eb-b9bf-3367d0ac6ba9" />
-
-
+<img width="244" height="79" alt="imagen" src="https://github.com/user-attachments/assets/9bcba2c4-7fb3-46eb-b9bf-3367d0ac6ba9" /><br/>
 
 <img width="245" height="97" alt="imagen" src="https://github.com/user-attachments/assets/d14c8157-bf6e-425b-91c0-a08149118f88" />
 
