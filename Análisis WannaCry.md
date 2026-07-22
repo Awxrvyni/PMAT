@@ -288,31 +288,31 @@ Esta útil página [https://malapi.io/](https://malapi.io/) cuenta con una clasi
 <img width="2848" height="4683" alt="imagen" src="https://github.com/user-attachments/assets/964e2e2f-e8d4-471d-a302-68708bf6634a" />
 
 On one hand, APIs related with web communication:
-- *GetAdaptersInfo*: commonly used to obtain data about network adapters in the system.
-- *InternetOpenA, InternetOpenUrlA, InternetCloseHandle*: used to establish a connection with a URL.
+- **GetAdaptersInfo**: commonly used to obtain data about network adapters in the system.
+- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: used to establish a connection with a URL.
 
 On the other hand, related with encryption:
-- *CryptAcquireContextA, CryptGenRandom*: cryptographic APIs
+- **CryptAcquireContextA, CryptGenRandom**: cryptographic APIs
 
 Finally, related with persistence:
-- *CreateServiceA
-- *StartServiceA
-- *StartServiceCtrlDispatcherA
-- *OpenSCManagerA*
+- **CreateServiceA**
+- **StartServiceA**
+- **StartServiceCtrlDispatcherA**
+- **OpenSCManagerA**
 
 
 Por un lado, tenemos las relacionadas con la comunicación web:
-- *GetAdaptersInfo*: comúnmente usada para obtener información acerca de los adaptadores de red presentes en el sistema.
-- *InternetOpenA, InternetOpenUrlA, InternetCloseHandle*: en conjunto, sirven para establecer contacto con una url.
+- **GetAdaptersInfo**: comúnmente usada para obtener información acerca de los adaptadores de red presentes en el sistema.
+- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: en conjunto, sirven para establecer contacto con una url.
 
 Por otra parte, relacionadas con la encriptación:
-- *CryptAcquireContextA, CryptGenRandom*: APIs de carácter criptográfico
+- **CryptAcquireContextA, CryptGenRandom**: APIs de carácter criptográfico
 
 Finalmente, relacionadas con la persistencia:
-- *CreateServiceA
-- *StartServiceA
-- *StartServiceCtrlDispatcherA
-- *OpenSCManagerA*
+- **CreateServiceA**
+- **StartServiceA**
+- **StartServiceCtrlDispatcherA**
+- **OpenSCManagerA**
 
 ### Second-stage payload
 
@@ -476,17 +476,17 @@ Looking at the command step by step:
 
 Examinando el comando paso a paso:
 
-- *vssadmin delete shadows /all /quiet*: deletes all the Volume Shadow Copies (backups of files, folders, or entire volumes) without confirmation
-- *wmic shadowcopy delete*: redoes the last step but using WMI, in case that was not possible through vssadmin
-- *bcdedit /set {default} bootstatuspolicy ignoreallfailures*: modifies Boot Configuration Data so that windows ignores boot errors and does not show options of automatic recovery
-- *bcdedit /set {default} recoveryenabled no*: unables Window's recovery environment (WinRE), which unallows automatic repair and the restoration from the recovery environment
-- *wbadmin delete catalog -quiet*: deletes backup's catalog of Windows Backup, which make them unusable
+- **vssadmin delete shadows /all /quiet**: deletes all the Volume Shadow Copies (backups of files, folders, or entire volumes) without confirmation
+- **wmic shadowcopy delete**: redoes the last step but using WMI, in case that was not possible through vssadmin
+- **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifies Boot Configuration Data so that windows ignores boot errors and does not show options of automatic recovery
+- **bcdedit /set {default} recoveryenabled no**: unables Window's recovery environment (WinRE), which unallows automatic repair and the restoration from the recovery environment
+- **wbadmin delete catalog -quiet**: deletes backup's catalog of Windows Backup, which make them unusable
 
-- *vssadmin delete shadows /all /quiet*: elimina todas las Volume Shadow Copies (puntos de restauración del sistema) sin confirmación
-- *wmic shadowcopy delete*: repite el paso anterior pero usando WMI, por si no fuera posible mediante vssadmin
-- *bcdedit /set {default} bootstatuspolicy ignoreallfailures*: modifica el Boot Configuration Data para que windows ignore errores de arranque y no muestre opciones de recuperación automática
-- *bcdedit /set {default} recoveryenabled no*: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
-- *wbadmin delete catalog -quiet*: borra el catálogo de backups de Windows Backup, lo que inutiliza los backups existentes
+- **vssadmin delete shadows /all /quiet**: elimina todas las Volume Shadow Copies (puntos de restauración del sistema) sin confirmación
+- **wmic shadowcopy delete**: repite el paso anterior pero usando WMI, por si no fuera posible mediante vssadmin
+- **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifica el Boot Configuration Data para que windows ignore errores de arranque y no muestre opciones de recuperación automática
+- **bcdedit /set {default} recoveryenabled no**: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
+- **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup, lo que inutiliza los backups existentes
 
 It is obvious that this executable takes care of the anti-recovery phase of the malware, his final phase, thanks to this command. First, encrypts all the data, and then erases any possibility of recovery.
 
@@ -743,10 +743,10 @@ Dentro del archivo comprimido tenemos los siguientes archivos:
 <img width="631" height="246" alt="imagen" src="https://github.com/user-attachments/assets/f37d241c-74fc-46ef-8b56-e9012ea6c9df" />
 
 Each file can be checked using the tool detect-it-easy and changing the file extension:
-- *Folder msg*: contains .rtf files with the .wnry extension, which are explanatory notes, in different languages, with all the steps to follow in order to make the payment. Those notes are used by *Wana Decrypt0r 2.0*: 
+- **Folder msg**: contains .rtf files with the .wnry extension, which are explanatory notes, in different languages, with all the steps to follow in order to make the payment. Those notes are used by *Wana Decrypt0r 2.0*: 
 
 Se puede ver qué es cada archivo usando la herramienta detect-it-easy y luego cambiando la extensión:
-- *Carpeta msg*: contiene archivos .rtf con la extensión .wnry, los cuales tienen, en diferentes idiomas, una nota explicativa de la situación y de los pasos a seguir para realizar el pago. Estas notas serán usadas por el programa *Wana Decrypt0r 2.0*:
+- **Carpeta msg**: contiene archivos .rtf con la extensión .wnry, los cuales tienen, en diferentes idiomas, una nota explicativa de la situación y de los pasos a seguir para realizar el pago. Estas notas serán usadas por el programa *Wana Decrypt0r 2.0*:
 
 <img width="337" height="236" alt="imagen" src="https://github.com/user-attachments/assets/40cf334a-502e-4299-9d7d-ff31d880e26e" />
 
@@ -756,31 +756,31 @@ As an example, the message in russian.
 
 Puede verse el mensaje en ruso, por ejemplo.
 
-- *b.wnry*: wallpaper with instructions to the user.
+- **b.wnry**: wallpaper with instructions to the user.
 
-- *b.wnry*: fondo de pantalla que queda tras la ejecución con instrucciones para el usuario.
+- **b.wnry**: fondo de pantalla que queda tras la ejecución con instrucciones para el usuario.
 
 <img width="779" height="534" alt="imagen" src="https://github.com/user-attachments/assets/a50111fc-7ce5-44e6-a1af-25a75545bc35" />
 
-- *c.wnry*: list of .onion sites, maybe related with the payment or with command and control functions. There is also a link to download Tor browser, possibly in case that it is not installed in the system:
+- **c.wnry**: list of .onion sites, maybe related with the payment or with command and control functions. There is also a link to download Tor browser, possibly in case that it is not installed in the system:
 
-- *c.wnry*: lista de direcciones .onion, puede que para realizar el pago o bien para funciones de command and control. También hay un link para descargar el navegador Tor, probablemente en caso de que no estuviera presente en el sistema:
+- **c.wnry**: lista de direcciones .onion, puede que para realizar el pago o bien para funciones de command and control. También hay un link para descargar el navegador Tor, probablemente en caso de que no estuviera presente en el sistema:
 
 <img width="555" height="404" alt="imagen" src="https://github.com/user-attachments/assets/ba22a8df-985b-43c6-b506-67a9c720d1b2" />
 
 <img width="671" height="172" alt="imagen" src="https://github.com/user-attachments/assets/ddd29c74-4401-4f5c-bee2-6e8f04c563e9" />
 
-- *r.wnry*: text file with an explanatory message to the user which says that the user is a victim of a ransomware attack and must pay. 
-- *s.wnry*: compressed folder with some .dll files related with Tor.
+- **r.wnry**: text file with an explanatory message to the user which says that the user is a victim of a ransomware attack and must pay. 
+- **s.wnry**: compressed folder with some .dll files related with Tor.
 
-- *r.wnry*: archivo de texto con mensaje para el usuario explicándole que ha sido víctima de un ransomware y debe pagar.
-- *s.wnry*: carpeta comprimida en la que figuran diferentes archivos .dll relacionados con Tor.
+- **r.wnry**: archivo de texto con mensaje para el usuario explicándole que ha sido víctima de un ransomware y debe pagar.
+- **s.wnry**: carpeta comprimida en la que figuran diferentes archivos .dll relacionados con Tor.
 
 <img width="201" height="272" alt="imagen" src="https://github.com/user-attachments/assets/331b181e-5cb1-4b7f-b490-aedc3bc29649" />
 
-- *t.wnry*: it is complicated to know the use of this file, because it does not have a common magic number, but the magic number `WANACRY!`:
+- **t.wnry**: it is complicated to know the use of this file, because it does not have a common magic number, but the magic number `WANACRY!`:
 
-- *t.wnry*: se hace complicado saber para qué se usa este archivo, ya que el magic number de este archivo no es de los comunes, sino `WANACRY!`:
+- **t.wnry**: se hace complicado saber para qué se usa este archivo, ya que el magic number de este archivo no es de los comunes, sino `WANACRY!`:
 
 <img width="645" height="265" alt="imagen" src="https://github.com/user-attachments/assets/fedf4293-011e-4843-83eb-ec360204a9e1" />
 
@@ -789,20 +789,20 @@ Trying to change the magic number to `MZ`, I do not observe any new information.
 Probando a cambiar el magic number por `MZ`, no se observa nueva información. No tengo claro para qué sirve este archivo, haría falta investigar más.
 
 - *taskdl.exe*: this executable has the following suspicious imports:
-	- *FindFirstFileW*
-	- *FindNextFileW*
-	- *DeleteFileW*
+	- **FindFirstFileW**
+	- **FindNextFileW**
+	- **DeleteFileW**
 The first two are used to find in directory and the third to delete files, so it is reasonable to think that the use of this executable is the deletion of files, possibly the user's files after their encryption.
 
 - *taskdl.exe*: este ejecutable cuenta con las siguientes imports sospechosas:
-	- *FindFirstFileW*
-	- *FindNextFileW*
-	- *DeleteFileW*
+	- **FindFirstFileW**
+	- **FindNextFileW**
+	- **DeleteFileW**
 Las dos primeras se usan para buscar en directorio y la tercera para el borrado de archivos, por lo cual es lícito pensar que el uso de este ejecutable es el de borrar archivos, posiblemente los archivos del usuario tras su encriptación.
 
-- *taskse.exe*: analyzing this executable with PEStudio, or checking his strings, nothing suspicious can be seen. Thanks to dynamic analysis I do realised about his role regarding the other files. May having more functions, but it is sure that is related with `@WanaDecryptor@.exe`, which shows a window at the end of the encryption. If this window is closed, the active process `tasksche.exe` runs `taskse.exe`, which runs again `@WanaDecryptor@.exe`. This happens every 30 seconds approximately and turns to be something really annoying to the user, unless the main process `@WanaDecryptor@.exe` and the process `tasksche.exe`, are closed.
+- **taskse.exe**: analyzing this executable with PEStudio, or checking his strings, nothing suspicious can be seen. Thanks to dynamic analysis I do realised about his role regarding the other files. May having more functions, but it is sure that is related with `@WanaDecryptor@.exe`, which shows a window at the end of the encryption. If this window is closed, the active process `tasksche.exe` runs `taskse.exe`, which runs again `@WanaDecryptor@.exe`. This happens every 30 seconds approximately and turns to be something really annoying to the user, unless the main process `@WanaDecryptor@.exe` and the process `tasksche.exe`, are closed.
 
-- *taskse.exe*: analizando este ejecutable en PEstudio o bien mirando sus strings, no se aprecia nada sospechoso. Mediante el análisis dinámico sí he podido figurarme cómo encaja en el gran esquema de las cosas, y pudiendo tener más funciones, se ve que está relacionado con el programa `@WanaDecryptor@.exe`. Este programa muestra una ventana al término de la ejecución del malware. Si se cierra esta ventana, el proceso activo `tasksche.exe` ejecuta  `taskse.exe` y este a su vez vuelve a ejecutar `@WanaDecryptor@.exe`. Esto ocurre aproximadamente cada 30 segundos, convirtiéndose en algo bastante molesto, a menos que se cierre el proceso principal `@WanaDecryptor@.exe` y el proceso  `tasksche.exe`, que es quien llama a `taskse.exe` cada vez. 
+- **taskse.exe**: analizando este ejecutable en PEstudio o bien mirando sus strings, no se aprecia nada sospechoso. Mediante el análisis dinámico sí he podido figurarme cómo encaja en el gran esquema de las cosas, y pudiendo tener más funciones, se ve que está relacionado con el programa `@WanaDecryptor@.exe`. Este programa muestra una ventana al término de la ejecución del malware. Si se cierra esta ventana, el proceso activo `tasksche.exe` ejecuta  `taskse.exe` y este a su vez vuelve a ejecutar `@WanaDecryptor@.exe`. Esto ocurre aproximadamente cada 30 segundos, convirtiéndose en algo bastante molesto, a menos que se cierre el proceso principal `@WanaDecryptor@.exe` y el proceso  `tasksche.exe`, que es quien llama a `taskse.exe` cada vez. 
 
 <img width="244" height="79" alt="imagen" src="https://github.com/user-attachments/assets/9bcba2c4-7fb3-46eb-b9bf-3367d0ac6ba9" />
 
@@ -812,9 +812,9 @@ Considering that `taskse.exe` runs only when is needed to run `@WanaDecryptor@.e
 
 Teniendo en cuenta que `taskse.exe` se abre sólo cuando hace falta invocar a `@WanaDecryptor@.exe` de nuevo y luego se cierra, diría que `tasksche.exe` monitoriza la lista de procesos activos, y si no figura `@WanaDecryptor@.exe`, es cuando ejecuta `taskse.exe`. Pero esto es sólo una suposición por mi parte.
 
-- *u.wnry*: executable of *@WanaDecryptor@.exe*:
+- **u.wnry**: executable of **@WanaDecryptor@.exe**:
 
-- *u.wnry*: ejecutable de *@WanaDecryptor@.exe*:
+- **u.wnry**: ejecutable de **@WanaDecryptor@.exe**:
 
 <img width="811" height="614" alt="imagen" src="https://github.com/user-attachments/assets/cd9a7c09-e309-4ab1-8881-1d62411cacf4" />
 
@@ -866,9 +866,9 @@ Desafortunadamente, no se recopilan datos de todos los eventos conocidos, como l
 
 ## Sysmon app for Splunk
 
-To use this app, is needed to install sysmon in the target VM (I used the *SwiftOnSecurity* configuration file template) and send the generated log with the relevant events to Splunk through a lightweight agent, known as a forwarder. Once the data has been sent, it can be viewed on different dashboards.
+To use this app, is needed to install sysmon in the target VM (I used the **SwiftOnSecurity** configuration file template) and send the generated log with the relevant events to Splunk through a lightweight agent, known as a forwarder. Once the data has been sent, it can be viewed on different dashboards.
 
-Para usarla, hay que instalar sysmon en la VM objetivo (he usado el archivo de configuración de *SwiftOnSecurity*) y mandar el log que genera con los eventos de interés a Splunk mediante un agente ligero llamado forwarder. Una vez enviados los datos, se podrán visualizar en diferentes dashboards. 
+Para usarla, hay que instalar sysmon en la VM objetivo (he usado el archivo de configuración de **SwiftOnSecurity**) y mandar el log que genera con los eventos de interés a Splunk mediante un agente ligero llamado forwarder. Una vez enviados los datos, se podrán visualizar en diferentes dashboards. 
 
 <img width="1630" height="578" alt="imagen" src="https://github.com/user-attachments/assets/8453fa2a-83c5-4809-bef1-aa0eef98e518" />
 
@@ -892,7 +892,7 @@ Otra sección que puede verse es la de operaciones a nivel de registro. Aquí en
 
 I did not previously detected the service *mssecsvc2.0*, it runs the first stage of WannaCry at the boot of the system:
 
-El servicio *mssecsvc2.0* no lo había detectado previamente, y se encarga de ejecutar la primera fase del malware en el inicio del sistema:
+El servicio **mssecsvc2.0** no lo había detectado previamente, y se encarga de ejecutar la primera fase del malware en el inicio del sistema:
 
 <img width="550" height="215" alt="imagen" src="https://github.com/user-attachments/assets/d2a6fa60-94f9-407a-95d5-bc71a9655949" />
 
