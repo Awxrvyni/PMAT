@@ -533,19 +533,19 @@ As starting point of the research, I will use the tries of exploitation captured
 
 Como punto de partida para empezar a investigar, tengo los intentos de explotación de EternalBlue que he podido ver en el análisis dinámico básico:
 
-![[13.jpg]]
+<img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/49900272-73df-4360-8867-35137943f419" />
 
 Strings that contain `IPC` have already appeared in the basic static analysis section. I look for them using Cutter to know the memory address where those strings are loaded:
 
 Strings que contienen la cadena `IPC` ya han aparecido en la sección de análisis estático básico, por lo que las busco mediante Cutter para saber la dirección de memoria en que se cargan esos strings:
 
-![[41.jpg]]
+<img width="369" height="73" alt="imagen" src="https://github.com/user-attachments/assets/7f9b2023-9bb4-4024-a7f9-037379cba7c5" />
 
 Cross-references (X-Refs)  are very useful because show the instruction that loads the string into memory:
 
 Usando las referencias cruzadas, se puede saber en qué instrucción se carga ese string en memoria:
 
-![[42.jpg]]
+<img width="767" height="409" alt="imagen" src="https://github.com/user-attachments/assets/770f5020-d8c5-4f82-a70e-6b5e1799f1c1" />
 
 A good point of Cutter is that allow to change the name of the functions at will depending on the results of the research. So, I moved up to the upper function and renamed it as `EternalBlue`.
 
@@ -555,13 +555,13 @@ Another strings that I discovered in the static analysis and could be useful are
 
 Por otra parte, algo que había descubierto en el análisis estático eran largas cadenas alfanuméricas que nunca volví a ver en ningún otro punto del análisis: 
 
-![[43.jpg]]
+<img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
 
 Under the suspicion of those strings might be related with the spreading of the malware, something that had not happened before, I redid the same steps in Cutter in order to determine which function would use them. I renamed it as `Payload`. Moving up to the upper function it can be seen that both functions are very close.
 
 Bajo la sospecha de que estos strings podían tener que ver con la propagación del malware, algo que no había pasado hasta ahora, realicé los mismos pasos en Cutter que para determinar cuál era la función que tomaría este papel. La renombré como `Payload`. Luego, subiendo en la jerarquía, veo que están muy cerca una de otra:
 
-![[44.jpg]]
+<img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/43f66340-bf1d-47f7-9acb-774116a8d7fb" />
 
 The function `EternalBlue` (*1*) is very close and before the function `Payload` (*2*), which makes sense, because first of all the malware checks if the exploit works and then sends the payload. So, the conditional jumps in (*3*) and (*4*) are the ones that I need to manipulate. I set a breakpoint in `0x00407582` to control step by step the execution.
 
@@ -571,41 +571,41 @@ However, the breakpoint never activates when the malware runs and automatically 
 
 Sin embargo, el breakpoint nunca se activa, pues al correr el programa aparece en el debugger que la ejecución ha terminado, pero el resto de procesos se ha llevado a cabo, ya que el proceso de encriptado sí que se realiza. Con esto en mente y mirando más cuidadosamente, me he dado cuenta de que tras ejecutar el killswitch con éxito (*1*), el PID del proceso cambia (*2*):
 
-![[36.jpg]]
+<img width="651" height="196" alt="imagen" src="https://github.com/user-attachments/assets/287dcae5-821b-48d4-a61a-66ead44b553d" />
 
-![[37.jpg]]
+<img width="427" height="172" alt="imagen" src="https://github.com/user-attachments/assets/230c7a88-1581-4555-9932-d4a5259e3bd9" />
 
 The details of the event show that the first stage of the malware is executed again with the flag `-m security`. Also the new PID is the same seen in the last picture. However, I lose the control of the debugging process after the killswitch. The solution I found was to set a breakpoint in the call to Create Thread, stop the execution in any new thread created and check procmon every time. But the new process will run uncontrolled when starts, so the attachment should be quick and the process must be paused. The problem with this solution is that I have not any control over the initial moments of the execution of this new process, but it works. Shortly after the new process starts, the old one ends:
 
 En los detalles del evento puede verse que se ejecuta de nuevo la primera fase del malware con el flag `-m security`. Se puede ver también que el PID nuevo coincide con el mostrado en la imagen anterior. El problema que me surge es que pierdo el control de la ejecución en el debugger tras la comprobación del killswitch. La solución que he encontrado ha sido poner un breakpoint en la función que crea nuevos hilos para que se pare la ejecución en ese punto, comprobar procmon cada vez y vincular rápidamente el debugger x32dbg al nuevo proceso, y pausarlo una vez vinculado. El problema de esto es que no tengo control sobre las primeros momentos de la ejecución de este nuevo proceso, pero funciona. Al poco de iniciarse el nuevo proceso, se termina el anterior:
 
-![[38.jpg]]
+<img width="260" height="134" alt="imagen" src="https://github.com/user-attachments/assets/8e0c8188-17e8-4294-a84a-a20f6ce13582" />
 
 This time, following the new process, the malware does stop in the set breakpoint on `EternalBlue`. Doing Step Over over that function appears network traffic showing the exploitation try:
 
 Ahora sí, al cambiar de proceso se para la ejecución en el breakpoint fijado en la función `EternalBlue`. Al hacer Step Over sobre esa función, se ve el tráfico del intento de explotación:
 
-![[40.jpg]]
+<img width="825" height="215" alt="imagen" src="https://github.com/user-attachments/assets/61e30ccb-7651-41a7-a550-c3345de4285d" />
 
 Keeping on with normal execution, the malware tries to take the next jump (*3*). I modify the value of Zero Flag (ZF) from 1 to 0 to prevent the jump:
 
 Al seguir con la normal ejecución del programa, veo que intenta tomar el salto siguiente (*3*). Modifico el valor de la Zero Flag (ZF) de 1 a 0 para que no tome el salto: 
 
-![[44.jpg]]
+<img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/2a982f09-9259-4caa-a1f0-7ebcdfa54c22" />
 
-![[45.jpg]]
+<img width="199" height="82" alt="imagen" src="https://github.com/user-attachments/assets/9a869c4e-81c1-4dc9-90e3-fac68c2b99ec" />
 
 The next jump (*4*) is not taken. After reaching the function `Payload`, and to do Step Over over it, it can be seen SMB traffic did not detected before to my vulnerable VM:
 
 El siguiente salto (*4*) no intenta tomarlo. Tras llegar a la función `Payload` y hacer Step Over sobre ella, puede verse tráfico SMB que no había antes hacia mi máquina vulnerable:
 
-![[46.jpg]]
+<img width="718" height="228" alt="imagen" src="https://github.com/user-attachments/assets/93b34aa2-eeef-4e82-9edf-62e86659661b" />
 
 Alphanumeric strings are sent in multiple SMB packets. The size of the sent data is higher than expected, which is 4096, in every packet. The following picture shows the symbols `==` at the end of the string in the last sent packet:
 
 Se mandan las diferentes cadenas alfanuméricas en varios paquetes SMB. En cada paquete la cantidad de datos enviados es muy superior a la esperada, de 4096. Como puede verse en la siguiente imagen, que muestra el último paquete enviado, al final del string están los símbolos `==`:
 
-![[47.jpg]]
+<img width="488" height="440" alt="imagen" src="https://github.com/user-attachments/assets/bcb618d3-3add-42ba-b737-2eb8937f19be" />
 
 The presence of the symbols `==` makes reasonable to think that the data is base64-encrypted. However, I tried to reconstruct the entire string according to the order of the sent packets, unsuccessfully.
 
@@ -615,15 +615,15 @@ After those strings, the malware sends data again:
 
 Por otro lado, tras el envío de estas cadenas, el malware vuelve a mandar datos:
 
-![[52.jpg]]
+<img width="444" height="349" alt="imagen" src="https://github.com/user-attachments/assets/d35124a2-4abb-4ee5-b7fb-fbac922825d2" />
 
 These packets does not contain any string that can make sense, it seems only hexadecimal data, and for that, it may be shellcode:
 
 Estos datos no contienen ninguna cadena que pueda tener sentido, más bien parece que sólo manda información en hexadecimal, por lo que podría ser un shellcode:
 
-![[53.jpg]]
+<img width="541" height="33" alt="imagen" src="https://github.com/user-attachments/assets/dbab7b05-e5f8-4dfd-ba3a-6dd0629d22c2" />
 
-![[54.jpg]]
+<img width="490" height="305" alt="imagen" src="https://github.com/user-attachments/assets/62a533bc-26f1-434b-b459-a9bbd800ed1a" />
 
 These data must combine in some way with the base64-string as the payload to infect other systems. Making some research I found that this kind of network activity is related with the use of DoublePulsar, a backdoor, capable of injecting shellcode or running DLLs into memory. My guess is that the apparently base64 string is used to implant DoublePulsar, while other packets are the malware itself. Therefore, WannaCry uses EternalBlue to open the door to the vulnerable system and after that DoublePulsar implants itself in order to inject the malware and to run it.
 
@@ -646,19 +646,19 @@ The output file from the script is an executable:
 
 El archivo que da el script a la salida es un ejecutable:
 
-![[57.jpg]]
+<img width="460" height="234" alt="imagen" src="https://github.com/user-attachments/assets/2a5ebd5e-899c-45dc-9074-23f93414818a" />
 
 Within it here is  the resource W, which has a high entropy, so it is highly probable that it could be another executable: 
 
 Dentro de este ejecutable se halla el recurso W, que al tener una alta entropía, es muy posible que sea otro ejecutable:
 
-![[56.jpg]]
+<img width="933" height="307" alt="imagen" src="https://github.com/user-attachments/assets/7ee68248-68b4-4642-8655-9777fd819607" />
 
 Inside the resource W I found the resource R, and the resource XIA within R. Whereby, resource R is the first stage of the malware.
 
 Dentro del recurso W encuentro a su vez al recurso R, y al recurso XIA dentro de éste último. Por lo cual, el recurso W es la primera fase del malware.
 
-![[58.jpg]]
+<img width="507" height="466" alt="imagen" src="https://github.com/user-attachments/assets/f137c840-8464-4729-b9d4-bab4b637f0b2" />
 
 Mixing static and dynamic analysis I had determine which functions are used by the malware to exploit EternalBlue and to spread the malware across the network, as well as to capture all that traffic with wireshark and to reconstruct the sent payload.
 
@@ -670,19 +670,19 @@ Using PEStudio it can be seen a suspicious resource, called R, which is an execu
 
 Analizando la muestra con PEStudio puede verse que el recurso R es un ejecutable, el cual es la segunda fase y que tendrá por nombre *tasksche.exe*. Gracias a PEStudio puedo guardarlo para analizarlo:
 
-![[4b7127b664533fefd11a9309daa368ab_MD5.jpg]]
+<img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/1e1bd88c-6b93-434b-b34d-949451e3b9ab" />
 
 That executable can be saved thanks to PEStudio. Inspecting him, there are a new resource inside, named XIA, which is a PKZIP compressed file:
 
 Usando PEStudio para guardar este ejecutable y a su vez inspeccionándolo se puede ver que hay un archivo comprimido PKZIP dentro de él:
 
-![[9a97f2462485d9be71f173b0aed8b1a1_MD5.jpg]]
+<img width="666" height="102" alt="imagen" src="https://github.com/user-attachments/assets/a92b9ebc-cf09-4978-8e06-d147342c4601" />
 
 I extract XIA and change his extension to .7z to unzip it and check what is inside. However, it is password protected. Given that this compressed file was inside *tasksche.exe*, it's highly probable that the password to unzip it is contained within. The password is found while inspecting with Cutter:
 
 Extraigo el archivo XIA y le cambio la extensión a .7z para descomprimirlo y comprobar su contenido. Sin embargo, está protegido con contraseña. Teniendo en cuenta que este archivo comprimido estaba dentro de *tasksche.exe*, es altamente probable que la contraseña para descomprimirlo esté dentro de él. Inspeccionando con Cutter figura la contraseña:
 
-![[358dd1bccab24a3b32ced606e94d0779_MD5.jpg]]
+<img width="487" height="155" alt="imagen" src="https://github.com/user-attachments/assets/87b6ba0f-02e3-4a62-b29a-cf02cf2a87c2" />
 
 The password is: **WNcry@2ol7**
 
@@ -692,7 +692,7 @@ Something interesting can be seen in the same picture:
 
 Algo interesante puede verse también en la imagen:
 
-![[55.jpg]]
+<img width="477" height="112" alt="imagen" src="https://github.com/user-attachments/assets/5c724bc1-6ace-4f20-856c-bbf834807ea6" />
 
 These commands are posterior actions ran by the malware when the zip is extracted. Both are legit Windows commands, used here with evil purposes:
 
@@ -740,7 +740,7 @@ Inside the compressed file there is the following files:
 
 Dentro del archivo comprimido tenemos los siguientes archivos:
 
-![[db13c47dff84f99bee235c40aba540c8_MD5.jpg]]
+<img width="631" height="246" alt="imagen" src="https://github.com/user-attachments/assets/f37d241c-74fc-46ef-8b56-e9012ea6c9df" />
 
 Each file can be checked using the tool detect-it-easy and changing the file extension:
 - *Folder msg*: contains .rtf files with the .wnry extension, which are explanatory notes, in different languages, with all the steps to follow in order to make the payment. Those notes are used by *Wana Decrypt0r 2.0*: 
@@ -748,9 +748,9 @@ Each file can be checked using the tool detect-it-easy and changing the file ext
 Se puede ver qué es cada archivo usando la herramienta detect-it-easy y luego cambiando la extensión:
 - *Carpeta msg*: contiene archivos .rtf con la extensión .wnry, los cuales tienen, en diferentes idiomas, una nota explicativa de la situación y de los pasos a seguir para realizar el pago. Estas notas serán usadas por el programa *Wana Decrypt0r 2.0*:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/04.jpg]]
+<img width="337" height="236" alt="imagen" src="https://github.com/user-attachments/assets/40cf334a-502e-4299-9d7d-ff31d880e26e" />
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/05.jpg]]
+<img width="569" height="243" alt="imagen" src="https://github.com/user-attachments/assets/d58f3a54-8f35-46e8-904e-40bcb90ce42c" />
 
 As an example, the message in russian.
 
@@ -758,26 +758,31 @@ Puede verse el mensaje en ruso, por ejemplo.
 
 - *b.wnry*: wallpaper with instructions to the user.
 
-- *b.wnry*: fondo de pantalla que queda tras la ejecución con instrucciones para el usuario. 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/06.jpg]]
+- *b.wnry*: fondo de pantalla que queda tras la ejecución con instrucciones para el usuario.
+
+<img width="779" height="534" alt="imagen" src="https://github.com/user-attachments/assets/a50111fc-7ce5-44e6-a1af-25a75545bc35" />
 
 - *c.wnry*: list of .onion sites, maybe related with the payment or with command and control functions. There is also a link to download Tor browser, possibly in case that it is not installed in the system:
 
 - *c.wnry*: lista de direcciones .onion, puede que para realizar el pago o bien para funciones de command and control. También hay un link para descargar el navegador Tor, probablemente en caso de que no estuviera presente en el sistema:
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/07.jpg]]
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/08.jpg]]
+
+<img width="555" height="404" alt="imagen" src="https://github.com/user-attachments/assets/ba22a8df-985b-43c6-b506-67a9c720d1b2" />
+
+<img width="671" height="172" alt="imagen" src="https://github.com/user-attachments/assets/ddd29c74-4401-4f5c-bee2-6e8f04c563e9" />
 
 - *r.wnry*: text file with an explanatory message to the user which says that the user is a victim of a ransomware attack and must pay. 
 - *s.wnry*: compressed folder with some .dll files related with Tor.
 
 - *r.wnry*: archivo de texto con mensaje para el usuario explicándole que ha sido víctima de un ransomware y debe pagar.
 - *s.wnry*: carpeta comprimida en la que figuran diferentes archivos .dll relacionados con Tor.
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/09.jpg]]
+
+<img width="201" height="272" alt="imagen" src="https://github.com/user-attachments/assets/331b181e-5cb1-4b7f-b490-aedc3bc29649" />
 
 - *t.wnry*: it is complicated to know the use of this file, because it does not have a common magic number, but the magic number `WANACRY!`:
 
 - *t.wnry*: se hace complicado saber para qué se usa este archivo, ya que el magic number de este archivo no es de los comunes, sino `WANACRY!`:
-![[49.jpg]]
+
+<img width="645" height="265" alt="imagen" src="https://github.com/user-attachments/assets/fedf4293-011e-4843-83eb-ec360204a9e1" />
 
 Trying to change the magic number to `MZ`, I do not observe any new information. Further investigation would be needed.
 
@@ -799,9 +804,9 @@ Las dos primeras se usan para buscar en directorio y la tercera para el borrado 
 
 - *taskse.exe*: analizando este ejecutable en PEstudio o bien mirando sus strings, no se aprecia nada sospechoso. Mediante el análisis dinámico sí he podido figurarme cómo encaja en el gran esquema de las cosas, y pudiendo tener más funciones, se ve que está relacionado con el programa `@WanaDecryptor@.exe`. Este programa muestra una ventana al término de la ejecución del malware. Si se cierra esta ventana, el proceso activo `tasksche.exe` ejecuta  `taskse.exe` y este a su vez vuelve a ejecutar `@WanaDecryptor@.exe`. Esto ocurre aproximadamente cada 30 segundos, convirtiéndose en algo bastante molesto, a menos que se cierre el proceso principal `@WanaDecryptor@.exe` y el proceso  `tasksche.exe`, que es quien llama a `taskse.exe` cada vez. 
 
-![[50.jpg]]
+<img width="244" height="79" alt="imagen" src="https://github.com/user-attachments/assets/9bcba2c4-7fb3-46eb-b9bf-3367d0ac6ba9" />
 
-![[51.jpg]]
+<img width="245" height="97" alt="imagen" src="https://github.com/user-attachments/assets/d14c8157-bf6e-425b-91c0-a08149118f88" />
 
 Considering that `taskse.exe` runs only when is needed to run `@WanaDecryptor@.exe` again and closes after that, I would say that `tasksche.exe` checks running processes and executes `@WanaDecryptor@.exe` if `taskse.exe` is not running. But this is just a guess.
 
@@ -810,8 +815,8 @@ Teniendo en cuenta que `taskse.exe` se abre sólo cuando hace falta invocar a `@
 - *u.wnry*: executable of *@WanaDecryptor@.exe*:
 
 - *u.wnry*: ejecutable de *@WanaDecryptor@.exe*:
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/10.jpg]]
 
+<img width="811" height="614" alt="imagen" src="https://github.com/user-attachments/assets/cd9a7c09-e309-4ab1-8881-1d62411cacf4" />
 
 
 # Regla YARA
@@ -865,37 +870,37 @@ To use this app, is needed to install sysmon in the target VM (I used the *Swift
 
 Para usarla, hay que instalar sysmon en la VM objetivo (he usado el archivo de configuración de *SwiftOnSecurity*) y mandar el log que genera con los eventos de interés a Splunk mediante un agente ligero llamado forwarder. Una vez enviados los datos, se podrán visualizar en diferentes dashboards. 
 
-![[29.jpg]]
+<img width="1630" height="578" alt="imagen" src="https://github.com/user-attachments/assets/8453fa2a-83c5-4809-bef1-aa0eef98e518" />
 
 Also, thanks to those dashboards, specific events can be viewed, like, for example, the DNS call that it works as the killswitch:
 
 También en base a esos dashboard se puede acceder directamente a eventos concretos, como por ejemplo la llamada DNS que constituye el killswitch:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/30.jpg]]
+<img width="493" height="331" alt="imagen" src="https://github.com/user-attachments/assets/87e23f1e-6a74-44ed-bae3-0d86b1d836e4" />
 
 Or even some other behaviours that I did not realized about can be seen, like the modification by the second stage of the malware of the creation date of the files `taskse.exe`, `tasksdl.exe` and  `tor.exe`. In the picture is shown the modification of `taskse.exe`:
 
 O incluso se pueden ver otros comportamientos no percibidos hasta ahora en el análisis, como la alteración de la fecha de creación de los archivos  `taskse.exe`, `tasksdl.exe` y  `tor.exe` por parte de la segunda fase del malware,  `tasksche.exe`. En la foto, la modificación de `taskse.exe`:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/31.jpg]]
+<img width="494" height="466" alt="imagen" src="https://github.com/user-attachments/assets/964d4242-56ac-4e54-90fb-fce1deba6d6e" />
 
 Another interesting section is about register-level operations. Here I found the register created to run *tasksche.exe* at boot, which I already talked about in the host-based indicators section, and a new service:
 
 Otra sección que puede verse es la de operaciones a nivel de registro. Aquí encuentro el registro creado para ejecutar *tasksche.exe* al inicio, registro ya comentado en la parte de indicadores basados en host, y otro servicio nuevo:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/32.jpg]]
+<img width="489" height="140" alt="imagen" src="https://github.com/user-attachments/assets/cb2f7b9e-a253-4307-9457-2e5ec27ed920" />
 
 I did not previously detected the service *mssecsvc2.0*, it runs the first stage of WannaCry at the boot of the system:
 
 El servicio *mssecsvc2.0* no lo había detectado previamente, y se encarga de ejecutar la primera fase del malware en el inicio del sistema:
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/34.jpg]]
+<img width="550" height="215" alt="imagen" src="https://github.com/user-attachments/assets/d2a6fa60-94f9-407a-95d5-bc71a9655949" />
 
 Start means the kind of service startup, while the value 2 means that the service will initiate at Window's boot automatically.
 
 Start indica el tipo de arranque del servicio, mientras que el valor 2 indica que el servicio se iniciará automáticamente al arrancar Windows.
 
-![[Ciberseguridad/TCM Security/PMAT - Practical Malware Analysis and Triage/05 - Wannacry/images/33.jpg]]
+<img width="583" height="305" alt="imagen" src="https://github.com/user-attachments/assets/0933b160-849f-4bd8-b357-1099a0f25250" />
 
 As can be seen, it runs the original file of the malware at boot, which means that this is another persistence mechanism.
 
