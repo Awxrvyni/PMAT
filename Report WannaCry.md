@@ -25,11 +25,11 @@ De entre la gran variedad de ransomware que hay, los dos principales diría que 
 
 ## 1 - File Hashes
 
-- *MD5*: db349b97c37d22f5ea1d1841e3c89eb4
+- *MD5*: `db349b97c37d22f5ea1d1841e3c89eb4`
     
-- *SHA1*: e889544aff85ffaf8b0d0da705105dee7c97fe26
+- *SHA1*: `e889544aff85ffaf8b0d0da705105dee7c97fe26`
     
-- *SHA256*: 24d004a104d4d54034dbcffc2a4b19a11f39008a575aa614ea04703480b1022c
+- *SHA256*: `24d004a104d4d54034dbcffc2a4b19a11f39008a575aa614ea04703480b1022c`
     
 Searching these hashes on VirusTotal reveals that the sample has been widely identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
 
@@ -41,9 +41,9 @@ Al buscar estos hashes en VirusTotal se observa que la muestra es identificada c
 
 ## 2 - Strings
 
-There are a lot of strings related to cryptography:
+Several strings related to cryptography can be found in the sample:
 
-Hay muchos strings relacionados con la criptografía:
+Pueden encontrarse muchos strings relacionados con la criptografía:
 
 ```
 CryptAcquireContextA
@@ -60,6 +60,9 @@ CryptAcquireContextA
 WanaCrypt0r
 ```
 
+These strings indicate that the sample makes use the Windows cryptographic API and that it is gonna use related operations, like key generation, encryption, decryption, and key management. This is coherente with the encryption functionalities of WannaCry, but the strings alone are not enough to figure out how the sample uses them.
+
+Estos strings indican que la muestra usa la API criptográfica de Windows y que va a realizar operaciones relacionadas, como la generación de claves, el cifrado, el descifrado y la gestión de claves. Esto encaja con las funcionalidades de cifrado de WannaCry, aunque sin proporcionar información sobre su uso exacto.
 
 Also, a suspicious URL can be found:
 
@@ -69,9 +72,15 @@ También se puede encontrar una url:
 hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com
 ```
 
-We also can see a list of the file's formats that the malware will encrypt:
+It is known that this url is related with the killswitch of WannaCry. WannaCry will try to connect to this domain while the execution. If the connection is successful, the execution of the malware ends.
 
-Aparece también una lista de los formatos de archivo que el malware encriptará:
+Es conocido que esta url está asociada con el killswitch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
+
+
+
+We also can see a wide list of the file's formats that the malware will target for encryption:
+
+Aparece también una lista de los formatos de archivo a los que el malware dirigirá el cifrado:
 
 ```
 .der
@@ -242,9 +251,9 @@ Aparece también una lista de los formatos de archivo que el malware encriptará
 .doc
 ```
 
-Strings related to the SMB protocol, and, obviously, with the exploitation of EternalBlue:
+Strings related to the SMB protocol, and, probably, with the exploitation of EternalBlue:
 
-Aparecen strings relacionados con el protocolo SMB, y por extensión,  con la explotación de EternalBlue:
+Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la explotación de EternalBlue:
 
 ```
 \%s\IPC$
@@ -326,9 +335,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-Then, calling things properly, Wannacry is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
+Then, calling things properly, Wannacry first stage is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
 
-Se puede decir entonces que Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Analizaré esta segunda fase del malware más adelante, en un apartado propio.
+Se puede decir entonces que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Analizaré esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
