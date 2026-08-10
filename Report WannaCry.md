@@ -7,16 +7,16 @@ This report is the conclusion of **PMAT (Practical Malware Analysis & Triage)** 
 Este informe es la conclusión del curso **PMAT (Practical Malware Analysis & Triage)**, en el que se pide analizar una muestra de malware real. Para ello he elegido uno de los ransomware más famosos: WannaCry, que causó estragos allá por 2017.
 
 Among the wide variety of ransomware that exists, the two main ones are: 
-- Crypto ransomware: attacks cyphering user's valuable files and make them unusable.
+- Crypto ransomware: attacks encrypting user's valuable files and makes them unusable.
 - Locker ransomware: blocks the access to the computer so it cannot be used.
 
 De entre la gran variedad de ransomware que hay, los dos principales diría que son dos: 
 - Ransomware de cifrado: ataca cifrando archivos valiosos para que no se pueda acceder a ellos.
 - Ransomware de bloqueo: bloquea el acceso al ordenador, impidiendo su uso.
 
-**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144) and the backdoor DoublePulsar. When it is executed succesfully in a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and obligue them to pay money in bitcoin in order to restore the access to their files.
+**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed succesfully in a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and obligue them to pay money in bitcoin in order to restore the access to their files.
 
-**WannaCry** es un ransomware de cifrado con capacidades de gusano identificado por primera vez en mayo de 2017. Se propaga de forma automática en sistemas Windows mediante el protocolo SMB aprovechando la vulnerabilidad conocida como EternalBlue (CVE-2017-0144) y el backdoor DoublePulsar. Una vez ejecutado con éxito en un equipo vulnerable, cifra los archivos de la víctima y muestra una nota de rescate con la idea de extorsionar a los usuarios y que paguen dinero en Bitcoin con la promesa de que se les devuelva el acceso a sus archivos.
+**WannaCry** es un ransomware de cifrado con capacidades de gusano identificado por primera vez en mayo de 2017. Se propaga de forma automática en sistemas Windows mediante el protocolo SMB aprovechando la vulnerabilidad conocida como EternalBlue (CVE-2017-0144). También emplea el backdoor DoublePulsar. Una vez ejecutado con éxito en un equipo vulnerable, cifra los archivos de la víctima y muestra una nota de rescate con la idea de extorsionar a los usuarios y que paguen dinero en Bitcoin con la promesa de que se les devuelva el acceso a sus archivos.
 
 
 
@@ -31,9 +31,9 @@ De entre la gran variedad de ransomware que hay, los dos principales diría que 
     
 - *SHA256*: `24d004a104d4d54034dbcffc2a4b19a11f39008a575aa614ea04703480b1022c`
     
-Searching these hashes on VirusTotal reveals that the sample has been widely identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
+Searching these hashes on VirusTotal reveals that the sample has been identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
 
-Al buscar estos hashes en VirusTotal se observa que la muestra es identificada como WannaCry. Además, la plataforma proporciona información adicional, como los nombres de detección, el análisis de la comunidad, etc:
+Al buscar estos hashes en VirusTotal se observa que la muestra se ha identificado como WannaCry. Además, la plataforma proporciona información adicional, como los nombres de detección, el análisis de la comunidad, etc:
 
 <img width="639" height="476" alt="imagen" src="https://github.com/user-attachments/assets/f098861f-f83a-4472-a841-03efce541449" />
 
@@ -77,12 +77,14 @@ It is known that this url is related with the killswitch of WannaCry. WannaCry w
 Es conocido que esta url está asociada con el killswitch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
 
 
-
 We also can see a wide list of the file's formats that the malware will target for encryption:
 
 Aparece también una lista de los formatos de archivo a los que el malware dirigirá el cifrado:
 
-```
+<details>
+<summary>List of targeted file extensions / Lista de extensiones objetivo</summary>
+
+```text
 .der
 .pfx
 .key
@@ -250,6 +252,8 @@ Aparece también una lista de los formatos de archivo a los que el malware dirig
 .docx
 .doc
 ```
+</details>
+
 
 Strings related to the SMB protocol, and, probably, with the exploitation of EternalBlue:
 
@@ -267,9 +271,9 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 
 ### Imports
 
-Analyzing the sample in PEStudio, we can first see that it is written in Microsoft Visual C++ v6.0 and is 32-bit:
+Analyzing the sample in PEStudio, we can first see that it is written in Microsoft Visual C++ v6.0 and is a 32-bit PE executable:
 
-Al analizar la muestra en PEStudio se puede ver primeramente que está escrito en Microsoft Visual C++ v6.0 y es de 32-bits:
+Al analizar la muestra en PEStudio se puede ver en primer lugar que está escrito en Microsoft Visual C++ v6.0 y que se trata de un ejecutable PE de 32-bits:
 
 <img width="371" height="151" alt="imagen" src="https://github.com/user-attachments/assets/8459f981-2a64-4db6-be7e-085aa35bbc7f" />
 
@@ -279,14 +283,13 @@ Figuran 91 imports, de los cuales 30 están marcados como potencialmente peligro
 
 <img width="356" height="249" alt="imagen" src="https://github.com/user-attachments/assets/f9c415be-38c2-4753-8556-5eed538d7aa9" />
 
-
 Among them are several that use ordinal import, a technique in which a PE imports functions from a DLL using the function's ordinal number instead of its name. This is also suspicious because it can be a form of light obfuscation when certain APIs are called.
 
 De entre ellos hay varios que presentan una importación ordinal, la cual es una técnica mediante la cual un PE importa funciones de una DLL usando el número ordinal de la función en lugar de su nombre. Esto también es sospechoso porque puede ser una forma de ofuscación ligera al llamar a ciertas APIs.
 
-However, this kind of technique could be used by legit software, because it reduces binary's size and the loading speed improves. But it is not common in modern software.
+However, this kind of technique is not inherently malicious and could be used by legit software, because it reduces binary's size and the loading speed improves. But it is not common in modern software.
 
-De todas maneras este tipo de técnica también puede darse en software legítimo ya que hace que los binarios puedan ser más pequeños y a que mejora la velocidad de carga. Aunque no es común en software moderno.
+De todas maneras este tipo de técnica no es necesariamente maliciosa y también puede darse en software legítimo ya que hace que los binarios puedan ser más pequeños y que la velocidad de carga mejore. Aunque no es común en software moderno.
 
 <img width="817" height="234" alt="imagen" src="https://github.com/user-attachments/assets/024f9c65-4261-4ed8-beb8-f1342d731917" />
 
@@ -335,9 +338,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-Then, calling things properly, Wannacry first stage is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
+This indicates that Wannacry's first stage is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
 
-Se puede decir entonces que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Analizaré esta segunda fase del malware más adelante, en un apartado propio.
+Esto indica que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Analizaré esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
