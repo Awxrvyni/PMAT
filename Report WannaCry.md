@@ -1,4 +1,3 @@
-
 # Introduction
 
 
@@ -6,7 +5,7 @@ This report is the conclusion of **PMAT (Practical Malware Analysis & Triage)** 
 
 Este informe es la conclusión del curso **PMAT (Practical Malware Analysis & Triage)**, en el que se pide analizar una muestra de malware real. Para ello he elegido uno de los ransomware más famosos: WannaCry, que causó estragos allá por 2017.
 
-Among the wide variety of ransomware that exists, the two main ones are: 
+Among the wide variety of ransomware that exists, the two main ones would be: 
 - Crypto ransomware: attacks encrypting user's valuable files and makes them unusable.
 - Locker ransomware: blocks the access to the computer so it cannot be used.
 
@@ -14,13 +13,13 @@ De entre la gran variedad de ransomware que hay, los dos principales diría que 
 - Ransomware de cifrado: ataca cifrando archivos valiosos para que no se pueda acceder a ellos.
 - Ransomware de bloqueo: bloquea el acceso al ordenador, impidiendo su uso.
 
-**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed succesfully in a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and obligue them to pay money in bitcoin in order to restore the access to their files.
+**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed succesfully in a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and oblige them to pay money in bitcoin in order to restore the access to their files.
 
 **WannaCry** es un ransomware de cifrado con capacidades de gusano identificado por primera vez en mayo de 2017. Se propaga de forma automática en sistemas Windows mediante el protocolo SMB aprovechando la vulnerabilidad conocida como EternalBlue (CVE-2017-0144). También emplea el backdoor DoublePulsar. Una vez ejecutado con éxito en un equipo vulnerable, cifra los archivos de la víctima y muestra una nota de rescate con la idea de extorsionar a los usuarios y que paguen dinero en Bitcoin con la promesa de que se les devuelva el acceso a sus archivos.
 
 
 
-# Basic static analysis
+# Basic Static analysis
 
 
 ## 1 - File Hashes
@@ -60,7 +59,7 @@ CryptAcquireContextA
 WanaCrypt0r
 ```
 
-These strings indicate that the sample makes use the Windows cryptographic API and that it is gonna use related operations, like key generation, encryption, decryption, and key management. This is coherente with the encryption functionalities of WannaCry, but the strings alone are not enough to figure out how the sample uses them.
+These strings indicate that the sample makes use the Windows cryptographic API and that it is gonna use related operations, like key generation, encryption, decryption, and key management. This is coherent with the encryption functionalities of WannaCry, but the strings alone are not enough to figure out how the sample uses them.
 
 Estos strings indican que la muestra usa la API criptográfica de Windows y que va a realizar operaciones relacionadas, como la generación de claves, el cifrado, el descifrado y la gestión de claves. Esto encaja con las funcionalidades de cifrado de WannaCry, aunque sin proporcionar información sobre su uso exacto.
 
@@ -72,14 +71,14 @@ También se puede encontrar una url:
 hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com
 ```
 
-It is known that this url is related with the killswitch of WannaCry. WannaCry will try to connect to this domain while the execution. If the connection is successful, the execution of the malware ends.
+It is known that this url is related with the kill switch of WannaCry. WannaCry will try to connect to this domain while the execution. If the connection is successful, the execution of the malware ends.
 
-Es conocido que esta url está asociada con el killswitch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
+Es conocido que esta url está asociada con el kill switch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
 
 
-We also can see a wide list of the file's formats that the malware will target for encryption:
+Also can be seen a wide list of the file's formats that the malware will target for encryption:
 
-Aparece también una lista de los formatos de archivo a los que el malware dirigirá el cifrado:
+Aparece también una lista de los formatos de archivo que el malware intentará cifrar:
 
 <details>
 <summary>List of targeted file extensions / Lista de extensiones objetivo</summary>
@@ -293,17 +292,17 @@ De todas maneras este tipo de técnica no es necesariamente maliciosa y también
 
 <img width="817" height="234" alt="imagen" src="https://github.com/user-attachments/assets/024f9c65-4261-4ed8-beb8-f1342d731917" />
 
-It can be seen by the name that those imports are related to the use of a socket, but it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means that those imports are related to the worm behaviour of wannacry.
+The names of these imports indicate that are related to socket operations, it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means, maybe,  that those imports are related to the worm behaviour of wannacry.
 
 Puede verse que por el nombre hacen referencia al uso de un socket, pero lo más revelador es que la DLL a la que llaman es WS2_32.dll, la Windows Socket Library, por lo que estos imports puede que sirvan al comportamiento de gusano que tiene el wannacry.
 
-[https://malapi.io/](https://malapi.io/) is a useful website that classifies certain APIs often used by malware, and points what use can be given. These are the ones in the sample and identified as suspicious:
+MalAPI is a useful website that classifies certain APIs often used by malware, and points what use can be given. These are the ones in the sample and identified as suspicious:
 
-Esta útil página [https://malapi.io/](https://malapi.io/) cuenta con una clasificación de determinadas apis a menudo usadas por malware, y señala qué uso se les suele dar. Estas son las presentes en la muestra y señaladas como sospechosas: 
+MalAPI es una página web muy útil que cuenta con una clasificación de determinadas apis a menudo usadas por malware, y señala qué uso se les suele dar. Estas son las presentes en la muestra y señaladas como sospechosas: 
 
 <img width="2848" height="4683" alt="imagen" src="https://github.com/user-attachments/assets/964e2e2f-e8d4-471d-a302-68708bf6634a" />
 
-On one hand, APIs related with web communication:
+On one hand, APIs related with network communication:
 - **GetAdaptersInfo**: commonly used to obtain data about network adapters in the system.
 - **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: used to establish a connection with a URL.
 
@@ -317,9 +316,9 @@ Finally, related with persistence:
 - **OpenSCManagerA**
 
 
-Por un lado, tenemos las relacionadas con la comunicación web:
+Por un lado, tenemos las relacionadas con la comunicación de red:
 - **GetAdaptersInfo**: comúnmente usada para obtener información acerca de los adaptadores de red presentes en el sistema.
-- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: en conjunto, sirven para establecer contacto con una url.
+- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: en conjunto, sirven para establecer y gestionar conexiones con una url.
 
 Por otra parte, relacionadas con la encriptación:
 - **CryptAcquireContextA, CryptGenRandom**: APIs de carácter criptográfico
@@ -338,9 +337,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-This indicates that Wannacry's first stage is a dropper, that is to say, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
+This indicates that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
 
-Esto indica que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Analizaré esta segunda fase del malware más adelante, en un apartado propio.
+Esto indica que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
@@ -348,9 +347,11 @@ Esto indica que la primera fase de Wannacry es un dropper, es decir, que contien
 
 ## Network-based indicators
 
-As a killswitch, the sample tries to connect in the beginning with the following URL:
+Initially, the sample tries to connect with the following URL, as a kill switch:
 
-A modo de killswitch, intenta conectar al principio de todo con la URL  `hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com` 
+A modo de kill switch, intenta conectar al principio de la ejecución con la URL:
+
+`hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com` 
 
 <img width="805" height="154" alt="imagen" src="https://github.com/user-attachments/assets/8f0e555c-e989-4cf3-aea4-b9bee0550773" />
 
@@ -394,9 +395,9 @@ Sin embargo, tras varios intentos, no se consiguió captar la propagación por l
 
 <img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/636fa03d-b363-40c5-9cec-2f96f92019c0" />
 
-This could suggest that the malware was developed in virtualbox, using his host-only mode, because it is the range of IPs that uses by default: 192.168.56.0/24
+This could suggest that the malware was developed in virtualbox, using his host-only mode, because it is the range of IPs that uses by default: 192.168.56.0/24. But this is just a personal hypothesis.
 
-Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su modo host-only, ya que es el rango de IPs que usa por defecto: 192.168.56.0/24
+Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su modo host-only, ya que es el rango de IPs que usa por defecto: 192.168.56.0/24. Aunque esto es sólo una hipótesis propia.
 
 
 ## Host-based indicators
@@ -455,7 +456,7 @@ La creación de un nuevo registro con el nombre de la carpeta creada y su poster
 
 Which enables a service with the same name that executes the second stage. This a persistence mechanism that will execute it every time that the system starts, encrypting the new files created after the initial infection, trying to spread the malware again, etc.
 
-El cual sirve a un servicio con el mismo nombre y que se encarga de ejecutar el payload. Esto es un mecanismo de persistencia que se encargará de ejecutarlo cada vez que se inicie el equipo, encriptando todo nuevo archivo que el usuario haya creado tras la infección inicial, intentando esparcir de nuevo el malware, etcétera.
+El cual sirve a un servicio con el mismo nombre y que se encarga de ejecutar el payload. Esto es un mecanismo de persistencia que se encargará de ejecutarlo cada vez que se inicie el equipo, cifrando todo nuevo archivo que el usuario haya creado tras la infección inicial, intentando esparcir de nuevo el malware, etcétera.
 
 Within services can be seen the persistence service created, which is stopped in the beginning and has automatic start. 
 
