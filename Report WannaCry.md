@@ -5,24 +5,24 @@ This report is the conclusion of **PMAT (Practical Malware Analysis & Triage)** 
 
 Este informe es la conclusión del curso **PMAT (Practical Malware Analysis & Triage)**, en el que se pide analizar una muestra de malware real. Para ello he elegido uno de los ransomware más famosos: WannaCry, que causó estragos allá por 2017.
 
-Among the wide variety of ransomware that exists, the two main ones would be: 
+Among the wide variety of ransomware that exists, the two main categories would be: 
 - Crypto ransomware: attacks encrypting user's valuable files and makes them unusable.
 - Locker ransomware: blocks the access to the computer so it cannot be used.
 
-De entre la gran variedad de ransomware que hay, los dos principales diría que son dos: 
+De entre la gran variedad de ransomware que hay, las dos categorías principales diría que son: 
 - Ransomware de cifrado: ataca cifrando archivos valiosos para que no se pueda acceder a ellos.
 - Ransomware de bloqueo: bloquea el acceso al ordenador, impidiendo su uso.
 
-**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed succesfully in a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and oblige them to pay money in bitcoin in order to restore the access to their files.
+**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed successfully on a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and oblige them to pay money in bitcoin in order to restore the access to their files.
 
 **WannaCry** es un ransomware de cifrado con capacidades de gusano identificado por primera vez en mayo de 2017. Se propaga de forma automática en sistemas Windows mediante el protocolo SMB aprovechando la vulnerabilidad conocida como EternalBlue (CVE-2017-0144). También emplea el backdoor DoublePulsar. Una vez ejecutado con éxito en un equipo vulnerable, cifra los archivos de la víctima y muestra una nota de rescate con la idea de extorsionar a los usuarios y que paguen dinero en Bitcoin con la promesa de que se les devuelva el acceso a sus archivos.
 
 
 
-# Basic Static analysis
+# Basic Static Analysis
 
 
-## 1 - File Hashes
+## 1 - Sample Hashes
 
 - *MD5*: `db349b97c37d22f5ea1d1841e3c89eb4`
     
@@ -30,7 +30,7 @@ De entre la gran variedad de ransomware que hay, los dos principales diría que 
     
 - *SHA256*: `24d004a104d4d54034dbcffc2a4b19a11f39008a575aa614ea04703480b1022c`
     
-Searching these hashes on VirusTotal reveals that the sample has been identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
+Searching for these hashes on VirusTotal reveals that the sample has been identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
 
 Al buscar estos hashes en VirusTotal se observa que la muestra se ha identificado como WannaCry. Además, la plataforma proporciona información adicional, como los nombres de detección, el análisis de la comunidad, etc:
 
@@ -65,20 +65,20 @@ Estos strings indican que la muestra usa la API criptográfica de Windows y que 
 
 Also, a suspicious URL can be found:
 
-También se puede encontrar una url:  
+También se puede encontrar una URL sospechosa:  
 
 ```
 hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com
 ```
 
-It is known that this url is related with the kill switch of WannaCry. WannaCry will try to connect to this domain while the execution. If the connection is successful, the execution of the malware ends.
+It is known that this URL is related with the kill switch of WannaCry. WannaCry will try to connect to this domain at the beginning of his execution. If the connection is successful, the execution ends.
 
-Es conocido que esta url está asociada con el kill switch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
+Es conocido que esta URL está asociada con el kill switch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
 
 
-Also can be seen a wide list of the file's formats that the malware will target for encryption:
+Also can be seen a wide list of the file extensions that the malware will target for encryption:
 
-Aparece también una lista de los formatos de archivo que el malware intentará cifrar:
+Aparece también una lista de las extensiones de archivo que el malware intentará cifrar:
 
 <details>
 <summary>List of targeted file extensions / Lista de extensiones objetivo</summary>
@@ -276,13 +276,13 @@ Al analizar la muestra en PEStudio se puede ver en primer lugar que está escrit
 
 <img width="371" height="151" alt="imagen" src="https://github.com/user-attachments/assets/8459f981-2a64-4db6-be7e-085aa35bbc7f" />
 
-There are 91 imports listed, of which 30 are marked as potentially dangerous or suspicious:
+There are 91 imports listed, of which 30 are flagged as potentially dangerous or suspicious:
 
 Figuran 91 imports, de los cuales 30 están marcados como potencialmente peligrosos o sospechosos:
 
 <img width="356" height="249" alt="imagen" src="https://github.com/user-attachments/assets/f9c415be-38c2-4753-8556-5eed538d7aa9" />
 
-Among them are several that use ordinal import, a technique in which a PE imports functions from a DLL using the function's ordinal number instead of its name. This is also suspicious because it can be a form of light obfuscation when certain APIs are called.
+Among them are several that use ordinal import, a technique in which a PE imports functions from a DLL using the function's ordinal number instead of their name. This is also suspicious because it can be a form of light obfuscation when certain APIs are called.
 
 De entre ellos hay varios que presentan una importación ordinal, la cual es una técnica mediante la cual un PE importa funciones de una DLL usando el número ordinal de la función en lugar de su nombre. Esto también es sospechoso porque puede ser una forma de ofuscación ligera al llamar a ciertas APIs.
 
@@ -292,7 +292,7 @@ De todas maneras este tipo de técnica no es necesariamente maliciosa y también
 
 <img width="817" height="234" alt="imagen" src="https://github.com/user-attachments/assets/024f9c65-4261-4ed8-beb8-f1342d731917" />
 
-The names of these imports indicate that are related to socket operations, it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means, maybe,  that those imports are related to the worm behaviour of wannacry.
+The names of these imports indicate that are related to socket operations, it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means, maybe, that those imports are related to the worm behaviour of wannacry.
 
 Puede verse que por el nombre hacen referencia al uso de un socket, pero lo más revelador es que la DLL a la que llaman es WS2_32.dll, la Windows Socket Library, por lo que estos imports puede que sirvan al comportamiento de gusano que tiene el wannacry.
 
@@ -302,7 +302,7 @@ MalAPI es una página web muy útil que cuenta con una clasificación de determi
 
 <img width="2848" height="4683" alt="imagen" src="https://github.com/user-attachments/assets/964e2e2f-e8d4-471d-a302-68708bf6634a" />
 
-On one hand, APIs related with network communication:
+On one hand, APIs related to network communication:
 - **GetAdaptersInfo**: commonly used to obtain data about network adapters in the system.
 - **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: used to establish a connection with a URL.
 
@@ -331,7 +331,7 @@ Finalmente, relacionadas con la persistencia:
 
 ### Second-stage payload
 
-A 32-bits executable can be seen inside the sample, named as resource R:
+A 32-bit executable can be seen inside the sample, named as resource R:
 
 Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
