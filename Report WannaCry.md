@@ -32,7 +32,7 @@ De entre la gran variedad de ransomware que hay, las dos categorías principales
     
 Searching for these hashes on VirusTotal reveals that the sample has been identified as WannaCry. The platform also provides additional information, including detection names, community analysis, etc:
 
-Al buscar estos hashes en VirusTotal se observa que la muestra se ha identificado como WannaCry. Además, la plataforma proporciona información adicional, como los nombres de detección, el análisis de la comunidad, etc:
+Al buscar estos hashes en VirusTotal se observa que la muestra es identificada como WannaCry. Además, la plataforma proporciona información adicional, como los nombres de detección, el análisis de la comunidad, etc:
 
 <img width="639" height="476" alt="imagen" src="https://github.com/user-attachments/assets/f098861f-f83a-4472-a841-03efce541449" />
 
@@ -71,7 +71,7 @@ También se puede encontrar una URL sospechosa:
 hxxp[://]www[.]iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com
 ```
 
-It is known that this URL is related with the kill switch of WannaCry. WannaCry will try to connect to this domain at the beginning of his execution. If the connection is successful, the execution ends.
+It is known that this URL is related with the kill switch of WannaCry. WannaCry will try to connect to this domain at the beginning of its execution. If the connection is successful, the execution ends.
 
 Es conocido que esta URL está asociada con el kill switch de WannaCry. WannaCry intenta conectarse a este dominio durante su ejecución. Si la conexión se establece correctamente, el malware finaliza su ejecución.
 
@@ -272,7 +272,7 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 
 Analyzing the sample in PEStudio, we can first see that it is written in Microsoft Visual C++ v6.0 and is a 32-bit PE executable:
 
-Al analizar la muestra en PEStudio se puede ver en primer lugar que está escrito en Microsoft Visual C++ v6.0 y que se trata de un ejecutable PE de 32-bits:
+Al analizar la muestra en PEStudio se puede ver en primer lugar que está escrito en Microsoft Visual C++ v6.0 y que se trata de un ejecutable PE de 32 bits:
 
 <img width="371" height="151" alt="imagen" src="https://github.com/user-attachments/assets/8459f981-2a64-4db6-be7e-085aa35bbc7f" />
 
