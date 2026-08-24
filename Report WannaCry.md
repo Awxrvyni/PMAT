@@ -355,11 +355,11 @@ A modo de kill switch, intenta conectar al principio de la ejecución con la URL
 
 <img width="805" height="154" alt="imagen" src="https://github.com/user-attachments/assets/8f0e555c-e989-4cf3-aea4-b9bee0550773" />
 
-If the connection is successful, the malware stops and does not do any other process. That is what allowed to stop the attack back in May 2017, because the researcher Marcus Hutchins registered this domain, stopping the global propagation of the ransomware.
+If the connection is successful, the malware stops its execution. That is what allowed to stop the attack back in May 2017, thanks to the researcher Marcus Hutchins, who registered this domain, stopping the global propagation of the ransomware.
 
 Si la conexión es exitosa, el programa deja de actuar y no realiza ningún proceso más. Esto es lo que permitió parar el ataque, ya que el investigador Marcus Hutchins registró este dominio, deteniendo la propagación global del ransomware en mayo de 2017.
 
-Then, if the connection is not successful and the payload starts, a lot of network activity is detected, due to the worm functionality that wannacry has, expanding across the network. In the images can be seen, both in Wireshark and at the system process level, how the malware tries to connect with any possible system in the net, scanning through the different IPs on the network. Moreover, the port is always **445**. That is because the SMB protocol uses that port, **445**, and therefore that port should be used to the successful exploitation of **EternalBlue**.
+Then, if the connection is unsuccessful and the payload starts, a lot of network activity is detected, due to the worm functionality that wannacry has, expanding across the network. In the images can be seen, both in Wireshark and at the system process level, how the malware tries to connect with any possible system in the net, scanning through the different IPs on the network. Moreover, the port is always **445**. That is because the SMB protocol uses that port, **445**, and therefore that port should be used to the successful exploitation of **EternalBlue**.
 
 Luego, si se empieza a ejecutar el payload, vemos que empieza a haber mucha actividad de red, esto es debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera sobre ese puerto, el **445**, y por lo tanto, para la explotación de **EternalBlue** es donde se debe apuntar.
 
@@ -367,7 +367,7 @@ Luego, si se empieza a ejecutar el payload, vemos que empieza a haber mucha acti
 
 <img width="910" height="197" alt="imagen" src="https://github.com/user-attachments/assets/576e3455-c496-49dd-8feb-f06be9755146" />
 
-Different connections with localhost were started, by the processes `taskhsvc.exe` and `@WanaDecryptor@.exe`.
+Different connections to localhost can also be observed, involving the processes `taskhsvc.exe` and `@WanaDecryptor@.exe`.
 
 Se inicia otra conexión con un proceso nuevo llamado `taskhsvc.exe` y otra con `@WanaDecryptor@.exe`, dirigidas al localhost.
 
@@ -383,13 +383,13 @@ I tried to connect to that port using netcat, with no success.
 
 He intentado conectarme a dicho puerto usando netcat, sin éxito.
 
-In order to make a try to capture the worm behaviour of WannaCry, I connected to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
+In order to make a try to capture the worm behaviour of WannaCry, I added to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
 
 Para intentar captar el comportamiento de gusano de WannaCry, he puesto en la red virtual una máquina Windows 7 vulnerable a EternalBlue:
 
 <img width="646" height="245" alt="imagen" src="https://github.com/user-attachments/assets/b5b64c0c-98f8-4b48-876b-11a321da8350" />
 
-However, after many tries, I did not detect the network propagation of the malware. That, surely, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
+However, after several attempts, I did not detect the network propagation of the malware. That, surely, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
 
 Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto seguramente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, he detectado que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20:
 
@@ -397,14 +397,14 @@ Sin embargo, tras varios intentos, no se consiguió captar la propagación por l
 
 This could suggest that the malware was developed in virtualbox, using his host-only mode, because it is the range of IPs that uses by default: 192.168.56.0/24. But this is just a personal hypothesis.
 
-Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su modo host-only, ya que es el rango de IPs que usa por defecto: 192.168.56.0/24. Aunque esto es sólo una hipótesis propia.
+Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su modo host-only, ya que es el rango de IPs que usa por defecto: 192.168.56.0/24. Aunque esto es sólo una hipótesis personal.
 
 
 ## Host-based indicators
 
-Our greatest ally in this section is procmon. First of all, the sample is executed with administrator privileges and the name of process that the sample has, is established as a filter. As we saw in the basic static analysis, this malware is a dropper, so the procmon's filter *Operation is CreateFile* is a must in order to see the name of the file that the second stage will have and where it will be created. A lot of files will be seen with this filter, but that is because the API *CreateFile* is used both for to create new files and for to access to files in general
+Our greatest tool in this section is procmon. First of all, the sample is executed with administrator privileges and the name of process that the sample has, is established as a filter. As we saw in the basic static analysis, this malware is a dropper, so the procmon's filter *Operation is CreateFile* is a must in order to see the name of the file that the second stage will have and where it will be created. A lot of files will be seen with this filter, but that is because the API *CreateFile* is used both for to create new files and for to access to files in general
 
-Nuestro gran aliado en esta sección es procmon. Para empezar, se ejecuta la muestra como administrador y se establece como filtro el nombre de proceso que tendrá el ejecutable. Como se ha visto, este malware es un dropper, por lo que se establece como filtro *Operation is CreateFile* en procmon y se podrá ver el nombre que se le da a la segunda fase del malware y dónde se creará. Al establecer este filtro se ven muchos archivos como objetivo de wannacry, pero eso es sólo porque la API *CreateFile* sirve tanto como para crear archivos nuevos como para acceder a archivos en general:
+Nuestra mejor herramienta en esta sección es procmon. Para empezar, se ejecuta la muestra como administrador y se establece como filtro el nombre de proceso que tendrá el ejecutable. Como se ha visto, este malware es un dropper, por lo que se establece como filtro *Operation is CreateFile* en procmon y se podrá ver el nombre que se le da a la segunda fase del malware y dónde se creará. Al establecer este filtro se ven muchos archivos como objetivo de wannacry, pero eso es sólo porque la API *CreateFile* sirve tanto como para crear archivos nuevos como para acceder a archivos en general:
 
 <img width="438" height="184" alt="imagen" src="https://github.com/user-attachments/assets/6c70220e-fb2f-482b-8407-b381448b7288" />
 
