@@ -337,9 +337,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-This indicates that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
+This could indicate that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
 
-Esto indica que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
+Esto podría indicar que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
@@ -355,13 +355,13 @@ A modo de kill switch, intenta conectar al principio de la ejecución con la URL
 
 <img width="805" height="154" alt="imagen" src="https://github.com/user-attachments/assets/8f0e555c-e989-4cf3-aea4-b9bee0550773" />
 
-If the connection is successful, the malware stops its execution. That is what allowed to stop the attack back in May 2017, thanks to the researcher Marcus Hutchins, who registered this domain, stopping the global propagation of the ransomware.
+If the connection is successful, the malware stops its execution. That is what allowed to stop the attack back in May 2017, thanks to the researcher Marcus Hutchins, who registered this domain, helping to stop the global propagation of the ransomware.
 
-Si la conexión es exitosa, el programa deja de actuar y no realiza ningún proceso más. Esto es lo que permitió parar el ataque, ya que el investigador Marcus Hutchins registró este dominio, deteniendo la propagación global del ransomware en mayo de 2017.
+Si la conexión es exitosa, el programa deja de actuar y no realiza ningún proceso más. Esto es lo que permitió parar el ataque, ya que el investigador Marcus Hutchins registró este dominio, ayudando a detener la propagación global del ransomware en mayo de 2017.
 
-Then, if the connection is unsuccessful and the payload starts, a lot of network activity is detected, due to the worm functionality that wannacry has, expanding across the network. In the images can be seen, both in Wireshark and at the system process level, how the malware tries to connect with any possible system in the net, scanning through the different IPs on the network. Moreover, the port is always **445**. That is because the SMB protocol uses that port, **445**, and therefore that port should be used to the successful exploitation of **EternalBlue**.
+Then, if the connection is unsuccessful and the payload starts, a lot of network activity is detected, due to the worm functionality that wannacry has, expanding itself across the network. In the images can be seen, both in Wireshark and at the system process level, how the malware tries to connect with any possible system in the net, scanning through the different IPs on the network. Moreover, the port is always **445**. That is because the SMB protocol uses that port, **445**, and therefore that port should be used to the successful exploitation of **EternalBlue**.
 
-Luego, si se empieza a ejecutar el payload, vemos que empieza a haber mucha actividad de red, esto es debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera sobre ese puerto, el **445**, y por lo tanto, para la explotación de **EternalBlue** es donde se debe apuntar.
+Luego, si se empieza a ejecutar el payload, se observa que empieza a haber mucha actividad de red, debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera sobre ese puerto, el **445**, y por lo tanto es al que se debe apuntar para la explotación de **EternalBlue**.
 
 <img width="428" height="272" alt="imagen" src="https://github.com/user-attachments/assets/dc0fc126-9876-4481-a4ad-a79ecd31ad00" />
 
@@ -385,13 +385,13 @@ He intentado conectarme a dicho puerto usando netcat, sin éxito.
 
 In order to make a try to capture the worm behaviour of WannaCry, I added to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
 
-Para intentar captar el comportamiento de gusano de WannaCry, he puesto en la red virtual una máquina Windows 7 vulnerable a EternalBlue:
+Para intentar captar el comportamiento de gusano de WannaCry, puse en la red virtual una máquina Windows 7 vulnerable a EternalBlue:
 
 <img width="646" height="245" alt="imagen" src="https://github.com/user-attachments/assets/b5b64c0c-98f8-4b48-876b-11a321da8350" />
 
-However, after several attempts, I did not detect the network propagation of the malware. That, surely, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
+However, after several attempts, I did not detect the network propagation of the malware. That, probably, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
 
-Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto seguramente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, he detectado que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20:
+Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto probablemente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, detecté que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20:
 
 <img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/636fa03d-b363-40c5-9cec-2f96f92019c0" />
 
