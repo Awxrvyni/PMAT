@@ -270,9 +270,9 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 
 ### Imports
 
-Analyzing the sample in PEStudio, we can first see that it is written in Microsoft Visual C++ v6.0 and is a 32-bit PE executable:
+Analyzing the sample in PEStudio, we can first see that it was compiled with Microsoft Visual C++ v6.0 and is a 32-bit PE executable:
 
-Al analizar la muestra en PEStudio se puede ver en primer lugar que está escrito en Microsoft Visual C++ v6.0 y que se trata de un ejecutable PE de 32 bits:
+Al analizar la muestra en PEStudio se puede ver en primer lugar que fue compilado con Microsoft Visual C++ v6.0 y que se trata de un ejecutable PE de 32 bits:
 
 <img width="371" height="151" alt="imagen" src="https://github.com/user-attachments/assets/8459f981-2a64-4db6-be7e-085aa35bbc7f" />
 
@@ -288,11 +288,11 @@ De entre ellos hay varios que presentan una importación ordinal, la cual es una
 
 However, this kind of technique is not inherently malicious and could be used by legit software, because it reduces binary's size and the loading speed improves. But it is not common in modern software.
 
-De todas maneras este tipo de técnica no es necesariamente maliciosa y también puede darse en software legítimo ya que hace que los binarios puedan ser más pequeños y que la velocidad de carga mejore. Aunque no es común en software moderno.
+De todas maneras, este tipo de técnica no es necesariamente maliciosa y también puede darse en software legítimo ya que hace que los binarios puedan ser más pequeños y que la velocidad de carga mejore. Aunque no es común en software moderno.
 
 <img width="817" height="234" alt="imagen" src="https://github.com/user-attachments/assets/024f9c65-4261-4ed8-beb8-f1342d731917" />
 
-The names of these imports indicate that are related to socket operations, it is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means, maybe, that those imports are related to the worm behaviour of wannacry.
+The names of these imports suggest that are related to socket operations. It is revealing that the called DLL is WS2_32.dll, Windows Socket Library, what it means, maybe, that those imports are related to the worm behaviour of wannacry.
 
 Puede verse que por el nombre hacen referencia al uso de un socket, pero lo más revelador es que la DLL a la que llaman es WS2_32.dll, la Windows Socket Library, por lo que estos imports puede que sirvan al comportamiento de gusano que tiene el wannacry.
 
@@ -300,14 +300,19 @@ MalAPI is a useful website that classifies certain APIs often used by malware, a
 
 MalAPI es una página web muy útil que cuenta con una clasificación de determinadas apis a menudo usadas por malware, y señala qué uso se les suele dar. Estas son las presentes en la muestra y señaladas como sospechosas: 
 
+<details>
+<summary> Flagged imports classified in MalAPI / Clasificación en MalAPI de imports marcados </summary>
+	
 <img width="2848" height="4683" alt="imagen" src="https://github.com/user-attachments/assets/964e2e2f-e8d4-471d-a302-68708bf6634a" />
+
+</details>
 
 On one hand, APIs related to network communication:
 - **GetAdaptersInfo**: commonly used to obtain data about network adapters in the system.
-- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: used to establish a connection with a URL.
+- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: used to initialize Internet access, open a URL/resource, and release the associated handles.
 
 On the other hand, related with encryption:
-- **CryptAcquireContextA, CryptGenRandom**: cryptographic APIs
+- **CryptAcquireContextA, CryptGenRandom**: cryptographic functions.
 
 Finally, related with persistence:
 - **CreateServiceA**
@@ -318,10 +323,10 @@ Finally, related with persistence:
 
 Por un lado, tenemos las relacionadas con la comunicación de red:
 - **GetAdaptersInfo**: comúnmente usada para obtener información acerca de los adaptadores de red presentes en el sistema.
-- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: en conjunto, sirven para establecer y gestionar conexiones con una url.
+- **InternetOpenA, InternetOpenUrlA, InternetCloseHandle**: pueden utilizarse para inicializar el acceso a Internet, abrir una URL o recurso y liberar los handles asociados.
 
 Por otra parte, relacionadas con la encriptación:
-- **CryptAcquireContextA, CryptGenRandom**: APIs de carácter criptográfico
+- **CryptAcquireContextA, CryptGenRandom**: funciones de carácter criptográfico.
 
 Finalmente, relacionadas con la persistencia:
 - **CreateServiceA**
@@ -337,15 +342,15 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-This could indicate that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which is his second phase or second stage. The malware second stage will be analyzed later, in his own section.
+This could indicate that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which would be its second phase or second stage. Sample's second stage will be analyzed later, in its own section.
 
-Esto podría indicar que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituye su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
+Esto podría indicar que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituiría su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
 # Basic dynamic analysis
 
-## Network-based indicators
+## 1 - Network-based indicators
 
 Initially, the sample tries to connect with the following URL, as a kill switch:
 
@@ -361,7 +366,7 @@ Si la conexión es exitosa, el programa deja de actuar y no realiza ningún proc
 
 Then, if the connection is unsuccessful and the payload starts, a lot of network activity is detected, due to the worm functionality that wannacry has, expanding itself across the network. In the images can be seen, both in Wireshark and at the system process level, how the malware tries to connect with any possible system in the net, scanning through the different IPs on the network. Moreover, the port is always **445**. That is because the SMB protocol uses that port, **445**, and therefore that port should be used to the successful exploitation of **EternalBlue**.
 
-Luego, si se empieza a ejecutar el payload, se observa que empieza a haber mucha actividad de red, debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera sobre ese puerto, el **445**, y por lo tanto es al que se debe apuntar para la explotación de **EternalBlue**.
+Luego, si se empieza a ejecutar el payload, se observa que empieza a haber mucha actividad de red, debido a la funcionalidad de worm que tiene wannacry, expandiéndose por la red. Aquí puede verse, tanto en wireshark como a nivel de procesos del sistema, cómo intenta conectarse con el resto de posibles sistemas en la red, haciendo un barrido por las diferentes IPs de la red. Por otra parte, tenemos que el puerto al que apunta siempre es el **445**. Esto se debe a que el protocolo SMB opera en ese puerto, el **445**, y por lo tanto es al que se debe apuntar para la explotación de **EternalBlue**.
 
 <img width="428" height="272" alt="imagen" src="https://github.com/user-attachments/assets/dc0fc126-9876-4481-a4ad-a79ecd31ad00" />
 
@@ -373,9 +378,9 @@ Se inicia otra conexión con un proceso nuevo llamado `taskhsvc.exe` y otra con 
 
 <img width="892" height="78" alt="imagen" src="https://github.com/user-attachments/assets/3d851202-2e68-42f0-bd98-ec2e7e33e159" />
 
-That process establish the port 9050 in listen mode for every IP:
+That process establish the port 9050 in listen mode for all interfaces:
 
-Puede verse además que este proceso deja el puerto 9050 a la escucha para todas las IPs:
+Puede verse además que este proceso deja el puerto 9050 a la escucha para todas las interfaces:
 
 <img width="894" height="66" alt="imagen" src="https://github.com/user-attachments/assets/92bb02bb-2f66-4516-9b83-75ef27875302" />
 
@@ -383,15 +388,19 @@ I tried to connect to that port using netcat, with no success.
 
 He intentado conectarme a dicho puerto usando netcat, sin éxito.
 
+9050 is the default port of the proxy SOCKS of Tor. As my personal assumption, this could be some kind of backdoor that allows the attacker to connect with the system using Tor network. This also explains why the connection was not possible using netcat.
+
+El puerto 9050 es usado por defecto por el proxy SOCKS de Tor. Como hipótesis personal, creo que esto podría ser un backdoor de algún tipo, que permitiese al atacante conectarse al sistema mediante el uso de la red Tor. Esto también explicaría por qué la conexión no fue posible usando netcat.
+
 In order to make a try to capture the worm behaviour of WannaCry, I added to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
 
 Para intentar captar el comportamiento de gusano de WannaCry, puse en la red virtual una máquina Windows 7 vulnerable a EternalBlue:
 
 <img width="646" height="245" alt="imagen" src="https://github.com/user-attachments/assets/b5b64c0c-98f8-4b48-876b-11a321da8350" />
 
-However, after several attempts, I did not detect the network propagation of the malware. That, probably, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20:
+However, after several attempts, I did not detect the network propagation of the malware. That, probably, due to the low rate of success of EternalBlue. As a curiosity, I detected that one of the exploitation tries does not use as path the IP of the vulnerable virtual machine, but 192.168.56.20, which also was observed as an IPC$ path in the identified strings in static analysis:
 
-Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto probablemente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, detecté que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20:
+Sin embargo, tras varios intentos, no se consiguió captar la propagación por la red del malware. Esto probablemente sea debido a que la vulnerabilidad EternalBlue no tiene una tasa de éxito demasiado elevada. Como curiosidad, detecté que uno de los intentos de explotación no usa como path la IP de la VM vulnerable, sino 192.168.56.20, lo cual aparece como una ruta IPC$ en los strings identificados en el análisis estático:
 
 <img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/636fa03d-b363-40c5-9cec-2f96f92019c0" />
 
@@ -400,7 +409,8 @@ This could suggest that the malware was developed in virtualbox, using his host-
 Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su modo host-only, ya que es el rango de IPs que usa por defecto: 192.168.56.0/24. Aunque esto es sólo una hipótesis personal.
 
 
-## Host-based indicators
+## 2 - Host-based indicators
+
 
 Our greatest tool in this section is procmon. First of all, the sample is executed with administrator privileges and the name of process that the sample has, is established as a filter. As we saw in the basic static analysis, this malware is a dropper, so the procmon's filter *Operation is CreateFile* is a must in order to see the name of the file that the second stage will have and where it will be created. A lot of files will be seen with this filter, but that is because the API *CreateFile* is used both for to create new files and for to access to files in general
 
@@ -408,7 +418,7 @@ Nuestra mejor herramienta en esta sección es procmon. Para empezar, se ejecuta 
 
 <img width="438" height="184" alt="imagen" src="https://github.com/user-attachments/assets/6c70220e-fb2f-482b-8407-b381448b7288" />
 
-According to the capabilities of the API *CreateFile*, it is reasonable to think that the malware first of all verifies that exists a file called *taskche.exe*, presumably his second stage, in the path *C:\Windows*. If it is not found, it will create it, as suggested by the two consecutive highlighted operations and their respective results.
+According to the capabilities of the API *CreateFile*, it is reasonable to think that the malware first of all verifies that exists a file called *tasksche.exe*, presumably his second stage, in the path *C:\Windows*. If it is not found, it will create it, as suggested by the two consecutive highlighted operations and their respective results.
 
 Teniendo en cuenta las capacidades de la API *CreateFile*, es de suponer que el malware verifica primero la existencia de un archivo llamado *taskche.exe*, el cual presumiblemente es la segunda fase, en la ruta *C:\Windows*, y si no lo encuentra, lo crea, como puede inferirse de las dos operaciones sucesivas remarcadas y su resultado.
 
@@ -497,17 +507,17 @@ Examinando el comando paso a paso:
 - **wmic shadowcopy delete**: redoes the last step but using WMI, in case that was not possible through vssadmin
 - **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifies Boot Configuration Data so that windows ignores boot errors and does not show options of automatic recovery
 - **bcdedit /set {default} recoveryenabled no**: unables Window's recovery environment (WinRE), which unallows automatic repair and the restoration from the recovery environment
-- **wbadmin delete catalog -quiet**: deletes backup's catalog of Windows Backup, which make them unusable
+- **wbadmin delete catalog -quiet**: deletes backup's catalog of Windows Backup
 
 - **vssadmin delete shadows /all /quiet**: elimina todas las Volume Shadow Copies (puntos de restauración del sistema) sin confirmación
 - **wmic shadowcopy delete**: repite el paso anterior pero usando WMI, por si no fuera posible mediante vssadmin
 - **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifica el Boot Configuration Data para que windows ignore errores de arranque y no muestre opciones de recuperación automática
 - **bcdedit /set {default} recoveryenabled no**: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
-- **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup, lo que inutiliza los backups existentes
+- **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup
 
-It is obvious that this executable takes care of the anti-recovery phase of the malware, his final phase, thanks to this command. First, encrypts all the data, and then erases any possibility of recovery.
+It is obvious that this executable takes care of the anti-recovery phase of the malware, his final phase, thanks to this command. It not only encrypts the data, but also makes it difficult to recover.
 
-Es evidente que este ejecutable se encarga de, entre otras cosas, de la fase antirecuperación del malware, su fase final, mediante la ejecución de este comando. Primero encripta todos los datos y luego elimina toda posibilidad de recuperación.
+Es evidente que este ejecutable se encarga de, entre otras cosas, de la fase antirecuperación del malware, su fase final, mediante la ejecución de este comando. No sólo cifra los datos, sino que además dificulta su recuperación.
 
 
 # Advanced static analysis
