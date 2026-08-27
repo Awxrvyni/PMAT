@@ -13,7 +13,7 @@ De entre la gran variedad de ransomware que hay, las dos categorías principales
 - Ransomware de cifrado: ataca cifrando archivos valiosos para que no se pueda acceder a ellos.
 - Ransomware de bloqueo: bloquea el acceso al ordenador, impidiendo su uso.
 
-**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed successfully on a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and oblige them to pay money in bitcoin in order to restore the access to their files.
+**WannaCry** is a crypto ransomware with worm capabilities identified for the first time in May 2017. It propagates automatically in Windows systems using the protocol SMB thanks to the vulnerability known as EternalBlue (CVE-2017-0144). It also uses the backdoor DoublePulsar. When it is executed successfully on a vulnerable computer, it encrypts victim's files and shows a ransom note with the intention of extorting the users and oblige them to pay money in Bitcoin in order to restore the access to their files.
 
 **WannaCry** es un ransomware de cifrado con capacidades de gusano identificado por primera vez en mayo de 2017. Se propaga de forma automática en sistemas Windows mediante el protocolo SMB aprovechando la vulnerabilidad conocida como EternalBlue (CVE-2017-0144). También emplea el backdoor DoublePulsar. Una vez ejecutado con éxito en un equipo vulnerable, cifra los archivos de la víctima y muestra una nota de rescate con la idea de extorsionar a los usuarios y que paguen dinero en Bitcoin con la promesa de que se les devuelva el acceso a sus archivos.
 
@@ -388,9 +388,9 @@ I tried to connect to that port using netcat, with no success.
 
 He intentado conectarme a dicho puerto usando netcat, sin éxito.
 
-9050 is the default port of the proxy SOCKS of Tor. As my personal assumption, this could be some kind of backdoor that allows the attacker to connect with the system using Tor network. This also explains why the connection was not possible using netcat.
+9050 is the default port of the proxy SOCKS of Tor. As my personal assumption, this could be some kind of backdoor that allows the attacker to connect with the system using Tor network. The use of SOCKS protocol would also explain why the connection was not possible using netcat.
 
-El puerto 9050 es usado por defecto por el proxy SOCKS de Tor. Como hipótesis personal, creo que esto podría ser un backdoor de algún tipo, que permitiese al atacante conectarse al sistema mediante el uso de la red Tor. Esto también explicaría por qué la conexión no fue posible usando netcat.
+El puerto 9050 es usado por defecto por el proxy SOCKS de Tor. Como hipótesis personal, creo que esto podría ser un backdoor de algún tipo, que permitiese al atacante conectarse al sistema mediante el uso de la red Tor. Que use el protocolo SOCKS también explicaría por qué la conexión no fue posible usando netcat.
 
 In order to make a try to capture the worm behaviour of WannaCry, I added to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
 
@@ -420,7 +420,7 @@ Nuestra mejor herramienta en esta sección es procmon. Para empezar, se ejecuta 
 
 According to the capabilities of the API *CreateFile*, it is reasonable to think that the malware first of all verifies that exists a file called *tasksche.exe*, presumably his second stage, in the path *C:\Windows*. If it is not found, it will create it, as suggested by the two consecutive highlighted operations and their respective results.
 
-Teniendo en cuenta las capacidades de la API *CreateFile*, es de suponer que el malware verifica primero la existencia de un archivo llamado *taskche.exe*, el cual presumiblemente es la segunda fase, en la ruta *C:\Windows*, y si no lo encuentra, lo crea, como puede inferirse de las dos operaciones sucesivas remarcadas y su resultado.
+Teniendo en cuenta las capacidades de la API *CreateFile*, es de suponer que el malware verifica primero la existencia de un archivo llamado *tasksche.exe*, el cual presumiblemente es la segunda fase, en la ruta *C:\Windows*, y si no lo encuentra, lo crea, como puede inferirse de las dos operaciones sucesivas remarcadas y su resultado.
 
 <img width="305" height="222" alt="imagen" src="https://github.com/user-attachments/assets/63503066-ff92-4120-a062-20afb4e90c46" />
 
@@ -432,7 +432,7 @@ Sabiendo ahora cómo se llama la segunda fase, se establece como filtro para seg
 
 Which is a folder created by the payload:
 
-El cual es una carpeta que ha creado el payload:
+El cual es una carpeta que creada por el payload:
 
 <img width="401" height="178" alt="imagen" src="https://github.com/user-attachments/assets/1080e705-17a5-4a4d-a25c-fd9fb55a17b5" />
 
