@@ -342,9 +342,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-This could indicate that Wannacry's first stage is a dropper, in other words, it contains an executable inside, which would be its second phase or second stage. Sample's second stage will be analyzed later, in its own section.
+This could indicate that Wannacry's first stage would act a dropper, in other words, it contains an executable inside, which would be its second phase or second stage. Sample's second stage will be analyzed later, in its own section.
 
-Esto podría indicar que la primera fase de Wannacry es un dropper, es decir, que contiene un ejecutable en su interior, el cual constituiría su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
+Esto podría indicar que la primera fase de Wannacry actuaría un dropper, es decir, que contiene un ejecutable en su interior, el cual constituiría su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
@@ -412,9 +412,9 @@ Esto podría indicarnos que el malware fue desarrollado en virtualbox, usando su
 ## 2 - Host-based indicators
 
 
-Our greatest tool in this section is procmon. First of all, the sample is executed with administrator privileges and the name of process that the sample has, is established as a filter. As we saw in the basic static analysis, this malware is a dropper, so the procmon's filter *Operation is CreateFile* is a must in order to see the name of the file that the second stage will have and where it will be created. A lot of files will be seen with this filter, but that is because the API *CreateFile* is used both for to create new files and for to access to files in general
+Our greatest tool in this section is procmon. First of all, the sample is executed with administrator privileges and the name of process that the sample has, is established as a filter. As we saw in the basic static analysis, this malware's first phase acts as a dropper, so the procmon's filter *Operation is CreateFile* is a must in order to see the name of the file that the second stage will have and where it will be created. A lot of files will be seen with this filter, but that is because the API *CreateFile* is used both for to create new files and for to access to files in general
 
-Nuestra mejor herramienta en esta sección es procmon. Para empezar, se ejecuta la muestra como administrador y se establece como filtro el nombre de proceso que tendrá el ejecutable. Como se ha visto, este malware es un dropper, por lo que se establece como filtro *Operation is CreateFile* en procmon y se podrá ver el nombre que se le da a la segunda fase del malware y dónde se creará. Al establecer este filtro se ven muchos archivos como objetivo de wannacry, pero eso es sólo porque la API *CreateFile* sirve tanto como para crear archivos nuevos como para acceder a archivos en general:
+Nuestra mejor herramienta en esta sección es procmon. Para empezar, se ejecuta la muestra como administrador y se establece como filtro el nombre de proceso que tendrá el ejecutable. Como se ha visto, la primera fase de este malware actúa un dropper, por lo que se establece como filtro *Operation is CreateFile* en procmon y se podrá ver el nombre que se le da a la segunda fase del malware y dónde se creará. Al establecer este filtro se ven muchos archivos como objetivo de wannacry, pero eso es sólo porque la API *CreateFile* sirve tanto como para crear archivos nuevos como para acceder a archivos en general:
 
 <img width="438" height="184" alt="imagen" src="https://github.com/user-attachments/assets/6c70220e-fb2f-482b-8407-b381448b7288" />
 
@@ -436,9 +436,9 @@ El cual es una carpeta que creada por el payload:
 
 <img width="401" height="178" alt="imagen" src="https://github.com/user-attachments/assets/1080e705-17a5-4a4d-a25c-fd9fb55a17b5" />
 
-Inside that directory are all the files within the compressed PKZIP file of the payload, and the file of the second stage itself (`tasksche.exe`):
+This directory contains many files, and among them the file of the second stage itself (`tasksche.exe`):
 
-En dicha carpeta pueden verse todos los archivos que se encuentran dentro del archivo comprimido PKZIP del payload, así como el archivo que conforma la segunda fase (`tasksche.exe`):
+En dicha carpeta puede verse multitud de archivos, así como el archivo que conforma la segunda fase (`tasksche.exe`):
 
 <img width="325" height="476" alt="imagen" src="https://github.com/user-attachments/assets/bbdbc383-59f3-4457-81c9-c134a4d7e3c6" />
 
@@ -448,9 +448,9 @@ También aparecen 3 archivos de nombre 00000000. Al analizar el de extensión .p
 
 <img width="638" height="232" alt="imagen" src="https://github.com/user-attachments/assets/a52815c9-b827-4657-a006-0c2a4a3acbb0" />
 
-The mention of the RSA cryptographic system and the similarity of the names suggest that these three files are essential during the data encryption process.
+The mention of the RSA cryptographic system and the similarity of the names suggest that these three files are related to the data encryption process.
 
-La mención al sistema criptográfico RSA y la similitud de los nombres, hace pensar que estos tres archivos son imprescindibles durante el proceso de encriptado de los datos.
+La mención al sistema criptográfico RSA y la similitud de los nombres, hace pensar que estos tres archivos están involucrados en el proceso de cifrado de los datos.
 
 An interesting outcome is shown with the name of the directory as a filter in procmon:
 
@@ -468,15 +468,15 @@ Which enables a service with the same name that executes the second stage. This 
 
 El cual sirve a un servicio con el mismo nombre y que se encarga de ejecutar el payload. Esto es un mecanismo de persistencia que se encargará de ejecutarlo cada vez que se inicie el equipo, cifrando todo nuevo archivo que el usuario haya creado tras la infección inicial, intentando esparcir de nuevo el malware, etcétera.
 
-Within services can be seen the persistence service created, which is stopped in the beginning and has automatic start. 
+Within services can be seen the persistence service created, which is stopped in the beginning and has automatic startup. 
 
 En efecto, en servicios puede verse el servicio de persistencia creado, el cual se encuentra detenido al principio y cuenta con inicio automático:
 
 <img width="383" height="371" alt="imagen" src="https://github.com/user-attachments/assets/67fdd899-c8d8-4b47-bc9c-c2797c6a5bf6" />
 
-Finally, the most obvious and evident host-indicators: all the files of the user are encrypted and unavailable. Moreover, the wallpaper was changed for another one with instructions to pay and that red window pop up with more detailed instructions for the payment:
+Finally, the most obvious and evident host-indicators: almost all the are encrypted and unavailable. Moreover, the wallpaper was changed for another one with instructions to pay and that red window pop up with more detailed instructions for the payment:
 
-Por último, los indicadores de host más claros y evidentes: todos los archivos del usuario quedan encriptados y no se puede acceder a ellos. Además, el fondo de pantalla cambia a uno con instrucciones para pagar y aparece esta ventana con instrucciones más detalladas para el pago:
+Por último, los indicadores de host más claros y evidentes: casi todos los archivos quedan cifrados y no se puede acceder a ellos. Además, el fondo de pantalla cambia a uno con instrucciones para pagar y aparece esta ventana con instrucciones más detalladas para el pago:
 
 <img width="1541" height="669" alt="imagen" src="https://github.com/user-attachments/assets/7e546c70-4d88-4908-b2bb-442329d195cd" />
 
@@ -515,9 +515,9 @@ Examinando el comando paso a paso:
 - **bcdedit /set {default} recoveryenabled no**: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
 - **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup
 
-It is obvious that this executable takes care of the anti-recovery phase of the malware, his final phase, thanks to this command. It not only encrypts the data, but also makes it difficult to recover.
+It is obvious that this executable takes care of the anti-recovery phase of the malware, thanks to this command. The malware not only encrypts the data, but also makes it difficult to recover.
 
-Es evidente que este ejecutable se encarga de, entre otras cosas, de la fase antirecuperación del malware, su fase final, mediante la ejecución de este comando. No sólo cifra los datos, sino que además dificulta su recuperación.
+Es evidente que este ejecutable se encarga de, entre otras cosas, de la fase antirecuperación del malware, mediante la ejecución de este comando. El malware no sólo cifra los datos, sino que además dificulta su recuperación.
 
 
 # Advanced static analysis
