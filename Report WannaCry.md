@@ -342,9 +342,9 @@ Se aprecia que hay un ejecutable de 32 bits dentro de la muestra:
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/8f1fd095-87d7-4215-8bec-725822e4913c" />
 
-This could indicate that Wannacry's first stage would act a dropper, in other words, it contains an executable inside, which would be its second phase or second stage. Sample's second stage will be analyzed later, in its own section.
+This could indicate that Wannacry's first stage would act as a dropper, in other words, it contains an executable inside, which would be its second phase or second stage. Sample's second stage will be analyzed later, in its own section.
 
-Esto podría indicar que la primera fase de Wannacry actuaría un dropper, es decir, que contiene un ejecutable en su interior, el cual constituiría su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
+Esto podría indicar que la primera fase de Wannacry actuaría como un dropper, es decir, que contiene un ejecutable en su interior, el cual constituiría su segunda fase o segunda etapa. Se analizará esta segunda fase del malware más adelante, en un apartado propio.
 
 
 
@@ -388,9 +388,9 @@ I tried to connect to that port using netcat, with no success.
 
 He intentado conectarme a dicho puerto usando netcat, sin éxito.
 
-9050 is the default port of the proxy SOCKS of Tor. As my personal assumption, this could be some kind of backdoor that allows the attacker to connect with the system using Tor network. The use of SOCKS protocol would also explain why the connection was not possible using netcat.
+After further research, I discovered that 9050 is the default port of the proxy SOCKS of Tor. As my personal assumption, this could be some kind of backdoor that allows the attacker to connect with the system using Tor network.
 
-El puerto 9050 es usado por defecto por el proxy SOCKS de Tor. Como hipótesis personal, creo que esto podría ser un backdoor de algún tipo, que permitiese al atacante conectarse al sistema mediante el uso de la red Tor. Que use el protocolo SOCKS también explicaría por qué la conexión no fue posible usando netcat.
+Tras investigar un poco, descubro que el puerto 9050 es usado por defecto por el proxy SOCKS de Tor. Como hipótesis personal, creo que esto podría ser un backdoor de algún tipo, que permitiese al atacante conectarse al sistema mediante el uso de la red Tor.
 
 In order to make a try to capture the worm behaviour of WannaCry, I added to the virtual network a Windows 7 vulnerable virtual machine vulnerable to EternalBlue:
 
@@ -504,23 +504,24 @@ Looking at the command step by step:
 Examinando el comando paso a paso:
 
 - **vssadmin delete shadows /all /quiet**: deletes all the Volume Shadow Copies (backups of files, folders, or entire volumes) without confirmation
-- **wmic shadowcopy delete**: redoes the last step but using WMI, in case that was not possible through vssadmin
+- **wmic shadowcopy delete**: deletes shadow copies through WMI. This provides another mechanism for removing Volume Shadow Copies.
 - **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifies Boot Configuration Data so that windows ignores boot errors and does not show options of automatic recovery
 - **bcdedit /set {default} recoveryenabled no**: unables Window's recovery environment (WinRE), which unallows automatic repair and the restoration from the recovery environment
 - **wbadmin delete catalog -quiet**: deletes backup's catalog of Windows Backup
 
 - **vssadmin delete shadows /all /quiet**: elimina todas las Volume Shadow Copies (puntos de restauración del sistema) sin confirmación
-- **wmic shadowcopy delete**: repite el paso anterior pero usando WMI, por si no fuera posible mediante vssadmin
+- **wmic shadowcopy delete**: elimina las shadow copies mediante WMI. Esto proporciona otro mecanismo para eliminar las Volume Shadow Copies.
 - **bcdedit /set {default} bootstatuspolicy ignoreallfailures**: modifica el Boot Configuration Data para que windows ignore errores de arranque y no muestre opciones de recuperación automática
 - **bcdedit /set {default} recoveryenabled no**: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
 - **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup
 
 It is obvious that this executable takes care of the anti-recovery phase of the malware, thanks to this command. The malware not only encrypts the data, but also makes it difficult to recover.
 
-Es evidente que este ejecutable se encarga de, entre otras cosas, de la fase antirecuperación del malware, mediante la ejecución de este comando. El malware no sólo cifra los datos, sino que además dificulta su recuperación.
+Es evidente que este ejecutable se encarga de, entre otras cosas, la fase antirecuperación del malware, mediante la ejecución de este comando. El malware no sólo cifra los datos, sino que además dificulta su recuperación.
 
 
 # Advanced static analysis
+
 
 Thanks to advanced analysis, certain internal aspects of the sample can be showed. For example, the killswitch, seen  in the section of network-based indicators:
 
@@ -528,9 +529,9 @@ Mediante el análisis avanzado se pueden ver ciertos aspectos de la muestra a ni
 
 <img width="637" height="632" alt="imagen" src="https://github.com/user-attachments/assets/1de95c47-3ee0-43b7-967e-c5582f30de49" />
 
-In the red highlighted *1*, the string that contains the URL is provided to the esi register so it can be used as an argument. The calls for functions in *2* that will connect to the killswitch URL. After that, if there are no response from the website, the program will continue running the instructions in *3* normally. But if the request is answered, the instructions in *4* will be executed an the malware will stop and exit without any encryption of data.
+In the red highlighted *1*, the string that contains the URL is provided to the ESI register so it can be used as an argument. The calls for functions in *2* that will connect to the killswitch URL. After that, if there are no response from the website, the program will continue running the instructions in *3* normally. But if the request is answered, the instructions in *4* will be executed an the malware will stop and exit without any encryption of data.
 
-Puede verse en *1* que se pasa el string que contiene la url al registro esi para que pueda ser usada luego como argumento. En *2* se ven las llamadas a las funciones que realizarán la comunicación web a dicha url. Luego, si no hay respuesta por parte de la web, irá por *3* y continuará ejecutándose de forma normal. Si hay respuesta, irá por *4* y el programa saldrá sin haber encriptado ninguno de los archivos.
+Puede verse en *1* que se pasa el string que contiene la url al registro ESI para que pueda ser usada luego como argumento. En *2* se ven las llamadas a las funciones que realizarán la comunicación web a dicha url. Luego, si no hay respuesta por parte de la web, irá por *3* y continuará ejecutándose de forma normal. Si hay respuesta, irá por *4* y el programa saldrá sin haber cifrado ninguno de los archivos.
 
 It is also clear when it saves to disk his second stage, thanks to the different calls to APIs that performs in order to do that. First of all, it loads into register the strings of the API's calls that will do with the goal of to create a file and write into him.
 
@@ -550,15 +551,17 @@ Para finalizar, se ve el nombre que se le va a poner al archivo, además de, por
 
 <img width="305" height="419" alt="imagen" src="https://github.com/user-attachments/assets/8d894136-c1cf-41a0-bd71-19d379e4f1b7" />
 
+
 # Advanced dynamic analysis 
 
-I tried to capture the moment of exploitation of EternalBlue and propagation of the malware, manipulating the worm behaviour of wannacry. Unfortunately, the exploit always fails and does not infect my vulnerable VM. That's why I will try to research and dynamically find where EternalBlue fails and change the execution flow in order to obligue the malware to send the payload, which I will capture using wireshark.
 
-He intentado manipular el comportamiento de worm de wannacry para intentar capturar el momento en que se intenta llevar a cabo la explotación de EternalBlue y la propagación de WannaCry. Ya que el exploit siempre falla y no consigue infectar a mi VM vulnerable, intentaré llegar dinámicamente a la parte en que falla EternalBlue y cambiar el rumbo de la ejecución para que mande el payload, el cual capturaré gracias a wireshark.
+I tried to capture the moment of exploitation of EternalBlue and propagation of the malware, manipulating the worm behaviour of wannacry. Unfortunately, in my tests, the exploit always fails and does not infect my vulnerable VM. That's why I will try to research and dynamically find where EternalBlue fails and change the execution flow in order to obligue the malware to send the payload, which I will capture using wireshark.
 
-As starting point of the research, I will use the tries of exploitation captured in the basic dynamic analysis section:
+He intentado manipular el comportamiento de worm de wannacry para intentar capturar el momento en que se intenta llevar a cabo la explotación de EternalBlue y la propagación de WannaCry. Ya que el exploit siempre falla en mis pruebas y no consigue infectar a la VM vulnerable, intentaré llegar dinámicamente a la parte en que falla EternalBlue y cambiar el rumbo de la ejecución para que mande el payload, el cual capturaré gracias a wireshark.
 
-Como punto de partida para empezar a investigar, tengo los intentos de explotación de EternalBlue que he podido ver en el análisis dinámico básico:
+As starting point of the research, I will use the attempts of EternalBlue exploitation captured during the basic dynamic analysis section:
+
+Como punto de partida para empezar a investigar, tengo los intentos de explotación de EternalBlue que he podido ver en la sección de análisis dinámico básico:
 
 <img width="563" height="217" alt="imagen" src="https://github.com/user-attachments/assets/49900272-73df-4360-8867-35137943f419" />
 
@@ -568,25 +571,25 @@ Strings que contienen la cadena `IPC` ya han aparecido en la sección de anális
 
 <img width="369" height="73" alt="imagen" src="https://github.com/user-attachments/assets/7f9b2023-9bb4-4024-a7f9-037379cba7c5" />
 
-Cross-references (X-Refs)  are very useful because show the instruction that loads the string into memory:
+Cross-references (X-Refs) are useful to show the instruction that loads the string into memory:
 
-Usando las referencias cruzadas, se puede saber en qué instrucción se carga ese string en memoria:
+Usando las referencias cruzadas (X-Refs), se puede saber en qué instrucción se carga ese string en memoria:
 
 <img width="767" height="409" alt="imagen" src="https://github.com/user-attachments/assets/770f5020-d8c5-4f82-a70e-6b5e1799f1c1" />
 
-A good point of Cutter is that allow to change the name of the functions at will depending on the results of the research. So, I moved up to the upper function and renamed it as `EternalBlue`.
+A good point of Cutter is that allow to change the name of the functions at will during the analysis. So, I moved up to the upper function and renamed it as `EternalBlue`.
 
-Lo bueno de Cutter es que permite cambiar el nombre a las funciones según nuestra voluntad, por lo que subo en la jerarquía y renombro a la función como `EternalBlue`. 
+Lo bueno de Cutter es que durante el análisis permite cambiar el nombre a las funciones a voluntad, por lo que subo en la jerarquía y renombro a la función como `EternalBlue`. 
 
-Another strings that I discovered in the static analysis and could be useful are long alphanumeric string for which I did not see any use in any step of the execution flow of the malware:
+Another strings that I discovered in the static analysis and could be useful are long alphanumeric string. I had not previously observed these strings being used during the execution flow:
 
-Por otra parte, algo que había descubierto en el análisis estático eran largas cadenas alfanuméricas que nunca volví a ver en ningún otro punto del análisis: 
+Por otra parte, algo que había descubierto en el análisis estático eran largas cadenas alfanuméricas. Hasta ese momento, no había observado que estos strings se utilizasen durante el flujo de ejecución:
 
 <img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
 
-Under the suspicion of those strings might be related with the spreading of the malware, something that had not happened before, I redid the same steps in Cutter in order to determine which function would use them. I renamed it as `Payload`. Moving up to the upper function it can be seen that both functions are very close.
+Under the suspicion of those strings might be related with the spreading of the malware, something that had not happened before, I redid the same steps in Cutter in order to determine which function would use them. I renamed that function as `Payload`. Moving up to the upper function it can be seen that both functions are very close.
 
-Bajo la sospecha de que estos strings podían tener que ver con la propagación del malware, algo que no había pasado hasta ahora, realicé los mismos pasos en Cutter que para determinar cuál era la función que tomaría este papel. La renombré como `Payload`. Luego, subiendo en la jerarquía, veo que están muy cerca una de otra:
+Bajo la sospecha de que estos strings podían tener que ver con la propagación del malware, algo que no había pasado hasta ahora, realicé los mismos pasos en Cutter que para determinar cuál era la función que tomaría este papel. Renombré dicha funcióncomo `Payload`. Luego, subiendo en la jerarquía, veo que están muy cerca una de otra:
 
 <img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/43f66340-bf1d-47f7-9acb-774116a8d7fb" />
 
@@ -596,35 +599,35 @@ La función `EternalBlue` (*1*) se halla muy cerca y antes de la función `Paylo
 
 However, the breakpoint never activates when the malware runs and automatically the debugger shows that the debugging ended, but all the other process were made: the second stage was released and the encryption started successfully. Having that in mind, and inspecting more carefully, I realised that after the successful execution of the killswitch (*1*), the PID of the process changes (*2*):
 
-Sin embargo, el breakpoint nunca se activa, pues al correr el programa aparece en el debugger que la ejecución ha terminado, pero el resto de procesos se ha llevado a cabo, ya que el proceso de encriptado sí que se realiza. Con esto en mente y mirando más cuidadosamente, me he dado cuenta de que tras ejecutar el killswitch con éxito (*1*), el PID del proceso cambia (*2*):
+Sin embargo, el breakpoint nunca se activa, pues al correr el programa aparece en el debugger que la ejecución ha terminado, pero el resto de procesos se ha llevado a cabo, ya que el proceso de cifrado de archivos sí que se realiza. Con esto en mente y mirando más cuidadosamente, me he dado cuenta de que tras ejecutar el killswitch con éxito (*1*), el PID del proceso cambia (*2*):
 
 <img width="651" height="196" alt="imagen" src="https://github.com/user-attachments/assets/287dcae5-821b-48d4-a61a-66ead44b553d" />
 
 <img width="427" height="172" alt="imagen" src="https://github.com/user-attachments/assets/230c7a88-1581-4555-9932-d4a5259e3bd9" />
 
-The details of the event show that the first stage of the malware is executed again with the flag `-m security`. Also the new PID is the same seen in the last picture. However, I lose the control of the debugging process after the killswitch. The solution I found was to set a breakpoint in the call to Create Thread, stop the execution in any new thread created and check procmon every time. But the new process will run uncontrolled when starts, so the attachment should be quick and the process must be paused. The problem with this solution is that I have not any control over the initial moments of the execution of this new process, but it works. Shortly after the new process starts, the old one ends:
+The details of the event show that the first stage of the malware is executed again with the flag `-m security`. Also the PID of the new process is the same seen in the last picture. However, I lose the control of the debugging process after the killswitch. The solution I found was to set a breakpoint in the call to Create Thread, stop the execution in any new thread created and check procmon every time. But the new process will run uncontrolled when starts, so the attachment should be quick and the process must be paused. The problem with this solution is that I have not any control over the initial moments of the execution of this new process. Nevertheless, I was fast enough to continue the investigation. Shortly after the new process starts, the old one ends:
 
-En los detalles del evento puede verse que se ejecuta de nuevo la primera fase del malware con el flag `-m security`. Se puede ver también que el PID nuevo coincide con el mostrado en la imagen anterior. El problema que me surge es que pierdo el control de la ejecución en el debugger tras la comprobación del killswitch. La solución que he encontrado ha sido poner un breakpoint en la función que crea nuevos hilos para que se pare la ejecución en ese punto, comprobar procmon cada vez y vincular rápidamente el debugger x32dbg al nuevo proceso, y pausarlo una vez vinculado. El problema de esto es que no tengo control sobre las primeros momentos de la ejecución de este nuevo proceso, pero funciona. Al poco de iniciarse el nuevo proceso, se termina el anterior:
+En los detalles del evento puede verse que se ejecuta de nuevo la primera fase del malware con el flag `-m security`. Se puede ver también que el PID del nuevo proceso coincide con el mostrado en la imagen anterior. El problema que me surge es que pierdo el control de la ejecución en el debugger tras la comprobación del killswitch. La solución que he encontrado ha sido poner un breakpoint en la función que crea nuevos hilos para que se pare la ejecución en ese punto, comprobar procmon cada vez y vincular rápidamente el debugger x32dbg al nuevo proceso, y pausarlo una vez vinculado. El problema de esto es que no tengo control sobre las primeros momentos de la ejecución de este nuevo proceso. No obstante, fui lo suficientemente rápido como para poder continuar la investigación. Al poco de iniciarse el nuevo proceso, se termina el anterior:
 
 <img width="260" height="134" alt="imagen" src="https://github.com/user-attachments/assets/8e0c8188-17e8-4294-a84a-a20f6ce13582" />
 
-This time, following the new process, the malware does stop in the set breakpoint on `EternalBlue`. Doing Step Over over that function appears network traffic showing the exploitation try:
+This time, after attaching to the new process, the malware does stop in the set breakpoint on `EternalBlue`. Doing Step Over over that function appears network traffic showing the exploitation try:
 
-Ahora sí, al cambiar de proceso se para la ejecución en el breakpoint fijado en la función `EternalBlue`. Al hacer Step Over sobre esa función, se ve el tráfico del intento de explotación:
+Ahora sí, tras asociar el debugger al nuevo proceso, se para la ejecución en el breakpoint fijado en la función `EternalBlue`. Al hacer Step Over sobre esa función, se ve el tráfico del intento de explotación:
 
 <img width="825" height="215" alt="imagen" src="https://github.com/user-attachments/assets/61e30ccb-7651-41a7-a550-c3345de4285d" />
 
 Keeping on with normal execution, the malware tries to take the next jump (*3*). I modify the value of Zero Flag (ZF) from 1 to 0 to prevent the jump:
 
-Al seguir con la normal ejecución del programa, veo que intenta tomar el salto siguiente (*3*). Modifico el valor de la Zero Flag (ZF) de 1 a 0 para que no tome el salto: 
+Al seguir con la normal ejecución, veo que intenta tomar el salto siguiente (*3*). Modifico el valor de la Zero Flag (ZF) de 1 a 0 para que no tome el salto: 
 
 <img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/2a982f09-9259-4caa-a1f0-7ebcdfa54c22" /><br/>
 
 <img width="199" height="82" alt="imagen" src="https://github.com/user-attachments/assets/9a869c4e-81c1-4dc9-90e3-fac68c2b99ec" />
 
-The next jump (*4*) is not taken. After reaching the function `Payload`, and to do Step Over over it, it can be seen SMB traffic did not detected before to my vulnerable VM:
+The next jump (*4*) is not taken. After reaching the function `Payload`, and to do Step Over over it, it can be seen SMB traffic that I did not detect before to my vulnerable VM:
 
-El siguiente salto (*4*) no intenta tomarlo. Tras llegar a la función `Payload` y hacer Step Over sobre ella, puede verse tráfico SMB que no había antes hacia mi máquina vulnerable:
+El siguiente salto (*4*) no intenta tomarlo. Tras llegar a la función `Payload` y hacer Step Over sobre ella, puede verse tráfico SMB que no había detectado antes hacia mi máquina vulnerable:
 
 <img width="718" height="228" alt="imagen" src="https://github.com/user-attachments/assets/93b34aa2-eeef-4e82-9edf-62e86659661b" />
 
@@ -636,7 +639,7 @@ Se mandan las diferentes cadenas alfanuméricas en varios paquetes SMB. En cada 
 
 The presence of the symbols `==` makes reasonable to think that the data is base64-encrypted. However, I tried to reconstruct the entire string according to the order of the sent packets, unsuccessfully.
 
-La presencia de los símbolos `==` hace pensar que se trate de información encriptada en base64. Sin embargo, he intentado poner todas las cadenas una tras otra, siguiendo el orden en que son enviadas, para desencriptar el payload enviado, sin éxito. 
+La presencia de los símbolos `==` hace pensar que se trate de información cifrada en base64. Sin embargo, he intentado poner todas las cadenas una tras otra, siguiendo el orden en que son enviadas en un intento para desencriptar el payload enviado, sin éxito. 
 
 After those strings, the malware sends data again:
 
@@ -656,32 +659,31 @@ These data must combine in some way with the base64-string as the payload to inf
 
 Estos datos han de combinarse de alguna manera con la cadena en base64 para la infección de otros equipos. Investigando, descubrí que este tipo de actividad de red es el que se ve con el uso de DoublePulsar, un backdoor, capaz de inyectar shellcode o ejecutar DLLs en memoria. Mi suposición es que la aparente cadena en base64 sirva para la implantación de DoublePulsar, mientras que los otros paquetes sean el malware en sí mismo. Por lo tanto, el malware ha de usar EternalBlue para abrir la puerta al sistema vulnerable y a continuación DoublePulsar se implanta para inyectar luego el malware y ejecutarlo.
 
-DoublePulsar uses a not too complex XOR obfuscation, so knowing the used formula, which is public, it should be easy to obtain the sent payload. I manage to decrypt it using a pcap file with the captured network traffic and the following script:
+DoublePulsar uses a not too complex XOR obfuscation, so knowing the used formula, which is public, it should be easy to obtain the sent payload. I manage to decrypt it using a PCAP file with the captured network traffic and the following script:
 ```
 https://github.com/WithSecureLabs/doublepulsar-c2-traffic-decryptor/blob/master/decrypt_doublepulsar_traffic.py
 ```
-I easily adapted the script to python 3 using chatgpt.
+I easily adapted the script to python 3 using ChatGPT.
 
-DoublePulsar usa una ofuscación XOR no demasiado compleja, por lo que conociendo la fórmula que se usa para ello, la cual es pública, debería ser sencillo obtener el payload enviado. Consigo desencriptarlo usando para ello un archivo pcap con el tráfico capturado y el siguiente script:
+DoublePulsar usa una ofuscación XOR no demasiado compleja, por lo que conociendo la fórmula que se usa para ello, la cual es pública, debería ser sencillo obtener el payload enviado. Consigo desencriptarlo usando para ello un archivo PCAP con el tráfico capturado y el siguiente script:
 ```
 https://github.com/WithSecureLabs/doublepulsar-c2-traffic-decryptor/blob/master/decrypt_doublepulsar_traffic.py
 ```
-Adapté sin problema el script a python 3 usando chatgpt.
+Adapté sin problema el script a python 3 usando ChatGPT.
 
+The output file from the script is a PE executable:
 
-The output file from the script is an executable:
-
-El archivo que da el script a la salida es un ejecutable:
+El archivo que da el script a la salida es un ejecutable PE:
 
 <img width="460" height="234" alt="imagen" src="https://github.com/user-attachments/assets/2a5ebd5e-899c-45dc-9074-23f93414818a" />
 
-Within it here is  the resource W, which has a high entropy, so it is highly probable that it could be another executable: 
+Within this executable, the resource W can be observed. Due to its high entropy, it is highly probable that it could be another executable: 
 
-Dentro de este ejecutable se halla el recurso W, que al tener una alta entropía, es muy posible que sea otro ejecutable:
+Dentro de este ejecutable se halla el recurso W. Debido a su alta entropía, es muy posible que sea otro ejecutable:
 
 <img width="933" height="307" alt="imagen" src="https://github.com/user-attachments/assets/7ee68248-68b4-4642-8655-9777fd819607" />
 
-Inside the resource W I found the resource R, and the resource XIA within R. Whereby, resource R is the first stage of the malware.
+Inside the resource W I found the resource R, and the resource XIA within R. Whereby, resource W is the first stage of the malware.
 
 Dentro del recurso W encuentro a su vez al recurso R, y al recurso XIA dentro de éste último. Por lo cual, el recurso W es la primera fase del malware.
 
@@ -705,7 +707,7 @@ Usando PEStudio para guardar este ejecutable y a su vez inspeccionándolo se pue
 
 <img width="666" height="102" alt="imagen" src="https://github.com/user-attachments/assets/a92b9ebc-cf09-4978-8e06-d147342c4601" />
 
-I extract XIA and change his extension to .7z to unzip it and check what is inside. However, it is password protected. Given that this compressed file was inside *tasksche.exe*, it's highly probable that the password to unzip it is contained within. The password is found while inspecting with Cutter:
+I extract XIA and change his extension to .7z to unzip it and check what is inside. However, it is password protected. Given that this compressed file was inside *tasksche.exe*, it is highly probable that the password to unzip it is contained within. The password is found while inspecting with Cutter:
 
 Extraigo el archivo XIA y le cambio la extensión a .7z para descomprimirlo y comprobar su contenido. Sin embargo, está protegido con contraseña. Teniendo en cuenta que este archivo comprimido estaba dentro de *tasksche.exe*, es altamente probable que la contraseña para descomprimirlo esté dentro de él. Inspeccionando con Cutter figura la contraseña:
 
@@ -847,6 +849,7 @@ Teniendo en cuenta que `taskse.exe` se abre sólo cuando hace falta invocar a `@
 
 
 # Regla YARA
+
 
 According to the gathered indicators in the whole analysis, a YARA rule for this malware can be written. However, I created this rule only with the first phase of the malware in mind, and that is why not all the indicators are valid, because some of them are into the compressed file. For example, .onion urls will never be triggered with this sample and will not be included.
 
