@@ -265,10 +265,18 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 \192.168.56.20\IPC$
 ```
 
+Also, long alphanumeric strings can be observed. Apparently, these strings could be encoded in Base64, but it is not sure:
+
+Además, se pueden encontrar largas cadenas alfanuméricas. Aparentemente podría tratarse de cadenas codificadas en Base64, pero no es seguro que así sea:
+
+<img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
+
 
 ## 3 - PEStudio
 
+
 ### Imports
+
 
 Analyzing the sample in PEStudio, we can first see that it was compiled with Microsoft Visual C++ v6.0 and is a 32-bit PE executable:
 
@@ -474,9 +482,15 @@ En efecto, en servicios puede verse el servicio de persistencia creado, el cual 
 
 <img width="383" height="371" alt="imagen" src="https://github.com/user-attachments/assets/67fdd899-c8d8-4b47-bc9c-c2797c6a5bf6" />
 
-Finally, the most obvious and evident host-indicators: almost all the are encrypted and unavailable. Moreover, the wallpaper was changed for another one with instructions to pay and that red window pop up with more detailed instructions for the payment:
+Finally, the most obvious and evident host-indicators: almost all files are encrypted and unavailable. Their file extension becomes `.WNCRY`:
 
-Por último, los indicadores de host más claros y evidentes: casi todos los archivos quedan cifrados y no se puede acceder a ellos. Además, el fondo de pantalla cambia a uno con instrucciones para pagar y aparece esta ventana con instrucciones más detalladas para el pago:
+Por último, los indicadores de host más claros y evidentes: casi todos los archivos quedan cifrados y no se puede acceder a ellos. La extensión de los archivos pasa a ser `.WNCRY`:
+
+<img width="231" height="237" alt="60" src="https://github.com/user-attachments/assets/274ff6ab-67a1-4b46-bf9a-e3a0bf83c2c6" />
+
+Moreover, the wallpaper was changed for another one with instructions to pay and that red window pop up with more detailed instructions for the payment:
+
+Además, el fondo de pantalla cambia a uno con instrucciones para pagar y aparece esta ventana con instrucciones más detalladas para el pago:
 
 <img width="1541" height="669" alt="imagen" src="https://github.com/user-attachments/assets/7e546c70-4d88-4908-b2bb-442329d195cd" />
 
@@ -671,9 +685,9 @@ https://github.com/WithSecureLabs/doublepulsar-c2-traffic-decryptor/blob/master/
 ```
 Adapté sin problema el script a python 3 usando ChatGPT.
 
-The output file from the script is a PE executable:
+The output file from the script is a PE executable that I named `payload`:
 
-El archivo que da el script a la salida es un ejecutable PE:
+El archivo que da el script a la salida es un ejecutable PE al que he llamado `payload`:
 
 <img width="460" height="234" alt="imagen" src="https://github.com/user-attachments/assets/2a5ebd5e-899c-45dc-9074-23f93414818a" />
 
@@ -689,11 +703,48 @@ Dentro del recurso W encuentro a su vez al recurso R, y al recurso XIA dentro de
 
 <img width="507" height="466" alt="imagen" src="https://github.com/user-attachments/assets/f137c840-8464-4729-b9d4-bab4b637f0b2" />
 
+The suspicion of resource W being the first phase of the malware seemed reasonable, but making a comparison between both hashes, from file `payload` and from initial sample, it can be seen that they do not match:
+
+La sospecha de que el recurso W fuese la primera fase del malware parecía razonable, pero comparando tanto del hash del archivo `payload` como el del recurso W con el hash de la muestra inicial, se observa que no coinciden:
+
+<img width="748" height="193" alt="61" src="https://github.com/user-attachments/assets/733cf13b-fd12-4dd4-bfff-4110f3682c3f" />
+
+However, the hash of the resource R within resource W do match with the hash of the file tasksche.exe, extracted from the initial sample:
+
+Sin embargo, el hash del recurso R contenido dentro del recurso W sí que coincide con el del archivo tasksche.exe, extraído de la muestra inicial:
+
+<img width="658" height="130" alt="62" src="https://github.com/user-attachments/assets/27a3b6f7-26a8-4c06-bfd2-ed75a53baca6" />
+
+Then, the malware achieves to be transmitted across the net, but it seems that does not transmit its first phase identically, because its hash is not the same. What can be said about this new executable obtained after the propagation is that it has the mechanism of kill switch and the capability to spread across the network. As can be seen in the following picture, I obtain the stringsof the file `payload` and both, the kill switch domain and the SMB communication strings, can be observed:
+
+Entonces, el malware consigue propagarse por la red, pero al parecer no transmite su primera fase de forma idéntica, ya que el hash cambia. Lo que sí se puede decir de este nuevo ejecutable obtenido tras la propagación es que sí tiene el mecanismo de kill switch y la capacidad para propagarse por la red. Como puede verse en la siguiente imagen, obtengo los strings del archivo `payload` y figuran tanto el dominio del kill switch como los strings referentes a la comunicación SMB:
+
+<img width="480" height="368" alt="63" src="https://github.com/user-attachments/assets/d9e240eb-d5f3-4eba-86c7-2e34d3668a4a" />
+
+These strings can not be observed in the second phase of the malware, as can be seen in this picture:
+
+Dichos strings no aparecen en la segunda fase del malware, como puede verse en esta imagen:
+
+<img width="418" height="324" alt="64" src="https://github.com/user-attachments/assets/3004b2fb-54c8-4fd1-9b06-b5b9a3d87fd7" />
+
+And because of that, I can declare that this behaviour of the sample belongs just to the first phase and not to the second phase; and despite the hashes of the initial sample and the payload reconstructed from network traffic not matching, the capabilities of the malware are preserved.
+
+Y debido a ello, puedo afirmar que este comportamiento del malware pertenece sólo a la primera fase y no a la segunda; y que a pesar de no coincidir los hashes de la muestra inicial y del payload reconstruido a partir del tráfico, las funcionalidades del malware se conservan.
+
+Strangely, checking the vulnerable vm, I observed that after this process it was infected:
+
+Extrañamente, comprobando la máquina virtual vulnerable, observé que tras todo este proceso estaba infectada:
+
+<img width="865" height="639" alt="59" src="https://github.com/user-attachments/assets/32672a26-eae1-4b0f-a2cc-869633c95955" />
+
+
 Mixing static and dynamic analysis I had determine which functions are used by the malware to exploit EternalBlue and to spread the malware across the network, as well as to capture all that traffic with wireshark and to reconstruct the sent payload.
 
 Combinando análisis estático y dinámico he logrado determinar las funciones que llevaban a cabo tanto la explotación de EternalBlue como el traspaso del malware a la nueva máquina infectada, así como captar todo este tráfico en wireshark y reconstruir el payload enviado.
 
+
 # Second-stage payload
+
 
 Using PEStudio it can be seen a suspicious resource, called R, which is an executable. It is the second phase of the malware and as we know in this point of the analysis, will have *tasksche.exe* as his name. I saved it for analysis.
 
