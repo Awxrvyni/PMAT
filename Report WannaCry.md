@@ -262,7 +262,6 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 \%s\IPC$
 \172.16.99.5\IPC$
 \192.168.56.20\IPC$
-\192.168.56.20\IPC$
 ```
 
 Also, long alphanumeric strings can be observed. Apparently, these strings could be encoded in Base64, but it is not sure:
