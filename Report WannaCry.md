@@ -736,6 +736,14 @@ Extrañamente, comprobando la máquina virtual vulnerable, observé que tras tod
 
 <img width="865" height="639" alt="59" src="https://github.com/user-attachments/assets/32672a26-eae1-4b0f-a2cc-869633c95955" />
 
+Puede verse la carpeta que crea y que contiene todos los archivos vistos en los indicadores de host de la sección de análisis dinámico básico. Aunque la cadena alfanumérica que tiene por nombre la carpeta es diferente a la de la muestra inicial:
+
+<img width="823" height="624" alt="65" src="https://github.com/user-attachments/assets/a7ff6b1a-9f22-40a8-b281-fb8322dbbbff" />
+
+También puede verse que el hash SHA256 del archivo `tasksche.exe` presente en la máquina infectada es el mismo que el reconstruido a partir del tráfico de red y el mismo también que el obtenido a partir de la muestra inicial:
+
+<img width="646" height="66" alt="66" src="https://github.com/user-attachments/assets/21b09bde-5f00-4e92-9965-b6f41ccccd21" />
+
 
 Mixing static and dynamic analysis I had determine which functions are used by the malware to exploit EternalBlue and to spread the malware across the network, as well as to capture all that traffic with wireshark and to reconstruct the sent payload.
 
