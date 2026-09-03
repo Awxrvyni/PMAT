@@ -266,9 +266,13 @@ Aparecen strings relacionados con el protocolo SMB, y, presumiblemente, con la e
 
 Also, long alphanumeric strings can be observed. Apparently, these strings could be encoded in Base64, but it is not sure:
 
-Además, se pueden encontrar largas cadenas alfanuméricas. Aparentemente podría tratarse de cadenas codificadas en Base64, pero no es seguro que así sea:
+Además, se pueden encontrar largas cadenas alfanuméricas. Aparentemente podría tratarse de cadenas codificadas en Base64, aunque no es seguro que así sea:
 
 <img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
+
+It would be possible to join the strings and decode them, but only one of them ends with `==`, which could indicate that the strings are fragments of a larger encoded sequence. Therefore, it is not possible to decode them without knowing the order, and for now I have no way of knowing it. If activity related to these strings is observed during execution, it might be possible to determine how the sample accesses, combines, or processes them. This would reveal how they are concatenated and could make it possible to decode and analyze their content.
+
+Se podría intentar unir las cadenas y decodificarlas, pero sólo una de ellas tiene los caracteres `==` al final, por lo que las diferentes cadenas podrían formar parte de una cadena mucho más grande. Debido a ello, no es posible decodificarlas sin saber el orden, y de momento no tengo forma de poder inferirlo. Si durante la ejecución se observa actividad relacionada con estas cadenas, podría ser posible determinar cómo la muestra accede a ellas, las combina o las procesa. Esto revelaría cómo serían concatenadas y podría hacer posible decodificar y analizar su contenido.
 
 
 ## 3 - PEStudio
@@ -528,9 +532,9 @@ Examinando el comando paso a paso:
 - **bcdedit /set {default} recoveryenabled no**: deshabilita el entorno de recuperación de Windows (WinRE), lo cual impide la reparación automática y la restauración desde el entorno de recuperación
 - **wbadmin delete catalog -quiet**: borra el catálogo de backups de Windows Backup
 
-It is obvious that this executable takes care of the anti-recovery phase of the malware, thanks to this command. The malware not only encrypts the data, but also makes it difficult to recover.
+It is obvious that this executable takes care of the anti-recovery phase of the malware thanks to this command. The malware not only encrypts the data, but also makes it difficult to recover.
 
-Es evidente que este ejecutable se encarga de, entre otras cosas, la fase antirecuperación del malware, mediante la ejecución de este comando. El malware no sólo cifra los datos, sino que además dificulta su recuperación.
+Es evidente que este ejecutable se encarga de, entre otras cosas, la fase antirecuperación del malware mediante la ejecución de este comando. El malware no sólo cifra los datos, sino que además dificulta su recuperación.
 
 
 # Advanced static analysis
