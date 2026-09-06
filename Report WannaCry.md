@@ -270,9 +270,9 @@ Además, se pueden encontrar largas cadenas alfanuméricas. Aparentemente podrí
 
 <img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
 
-It would be possible to join the strings and decode them, but only one of them ends with `==`, which could indicate that the strings are fragments of a larger encoded sequence. Therefore, it is not possible to decode them without knowing the order, and for now I have no way of knowing it. If activity related to these strings is observed during execution, it might be possible to determine how the sample accesses, combines, or processes them. This would reveal how they are concatenated and could make it possible to decode and analyze their content.
+It would be possible to decode the strings, but only one of them ends with `==`, which could indicate that the strings are fragments of a larger encoded sequence. Therefore, it is not possible to decode them without knowing the order, and for now I have no way of knowing it. If activity related to these strings is observed during execution, it might be possible to determine how the sample accesses, combines, or processes them. This would reveal how they are concatenated and could make it possible to decode and analyze their content.
 
-Se podría intentar unir las cadenas y decodificarlas, pero sólo una de ellas tiene los caracteres `==` al final, por lo que las diferentes cadenas podrían formar parte de una cadena mucho más grande. Debido a ello, no es posible decodificarlas sin saber el orden, y de momento no tengo forma de poder inferirlo. Si durante la ejecución se observa actividad relacionada con estas cadenas, podría ser posible determinar cómo la muestra accede a ellas, las combina o las procesa. Esto revelaría cómo serían concatenadas y podría hacer posible decodificar y analizar su contenido.
+Se podría intentar decodificar las cadenas, pero sólo una de ellas tiene los caracteres `==` al final, por lo que las diferentes cadenas podrían formar parte de una cadena mucho más grande. Debido a ello, no es posible decodificarlas sin saber el orden, y de momento no tengo forma de poder inferirlo. Si durante la ejecución se observa actividad relacionada con estas cadenas, podría ser posible determinar cómo la muestra accede a ellas, las combina o las procesa. Esto revelaría cómo serían concatenadas y podría hacer posible decodificar y analizar su contenido.
 
 
 ## 3 - PEStudio
@@ -572,9 +572,9 @@ Para finalizar, se ve el nombre que se le va a poner al archivo, además de, por
 # Advanced dynamic analysis 
 
 
-I tried to capture the moment of exploitation of EternalBlue and propagation of the malware, manipulating the worm behaviour of wannacry. Unfortunately, in my tests, the exploit always fails and does not infect my vulnerable VM. That's why I will try to research and dynamically find where EternalBlue fails and change the execution flow in order to obligue the malware to send the payload, which I will capture using wireshark.
+I tried to capture the moment of exploitation of EternalBlue and propagation of the malware, manipulating the worm behaviour of wannacry. Unfortunately, in my tests, the exploit always fails and does not infect my vulnerable VM. Therefore, I decided to investigate dynamically where the execution path was failing and determine whether modifying that control flow would allow the subsequent payload-delivery phase to be reached, which I will attempt to capture using wireshark.
 
-He intentado manipular el comportamiento de worm de wannacry para intentar capturar el momento en que se intenta llevar a cabo la explotación de EternalBlue y la propagación de WannaCry. Ya que el exploit siempre falla en mis pruebas y no consigue infectar a la VM vulnerable, intentaré llegar dinámicamente a la parte en que falla EternalBlue y cambiar el rumbo de la ejecución para que mande el payload, el cual capturaré gracias a wireshark.
+He intentado manipular el comportamiento de worm de wannacry para intentar capturar el momento en que se intenta llevar a cabo la explotación de EternalBlue y la propagación de WannaCry. Sin embargo, el exploit siempre falla en mis pruebas y no consigue infectar a la VM vulnerable. Por ello, decidí investigar dinámicamente en qué punto fallaba el flujo de ejecución y determinar si una modificación de dicho flujo permitiría alcanzar la etapa posterior de envío del payload, el cual intentaré capturar usando wireshark.
 
 As starting point of the research, I will use the attempts of EternalBlue exploitation captured during the basic dynamic analysis section:
 
@@ -600,31 +600,35 @@ Lo bueno de Cutter es que durante el análisis permite cambiar el nombre a las f
 
 Another strings that I discovered in the static analysis and could be useful are long alphanumeric string. I had not previously observed these strings being used during the execution flow:
 
-Por otra parte, algo que había descubierto en el análisis estático eran largas cadenas alfanuméricas. Hasta ese momento, no había observado que estos strings se utilizasen durante el flujo de ejecución:
+Por otra parte, algo que había descubierto en el análisis estático eran largas cadenas alfanuméricas. Hasta este momento, no se ha observado que estos strings fuesen usados durante el flujo de ejecución:
 
 <img width="724" height="473" alt="imagen" src="https://github.com/user-attachments/assets/23a9ba11-3414-482c-8ab6-08e8dd3972e7" />
 
-Under the suspicion of those strings might be related with the spreading of the malware, something that had not happened before, I redid the same steps in Cutter in order to determine which function would use them. I renamed that function as `Payload`. Moving up to the upper function it can be seen that both functions are very close.
+Under the suspicion of those strings might be related with the spreading of the malware, I redid the same steps in Cutter in order to determine which function would use them. I renamed that function as `Payload`. Moving upward through the call hierarchy it can be seen that both functions are very close:
 
-Bajo la sospecha de que estos strings podían tener que ver con la propagación del malware, algo que no había pasado hasta ahora, realicé los mismos pasos en Cutter que para determinar cuál era la función que tomaría este papel. Renombré dicha funcióncomo `Payload`. Luego, subiendo en la jerarquía, veo que están muy cerca una de otra:
+Bajo la sospecha de que estos strings podían estar relacionados con la propagación del malware, realicé los mismos pasos en Cutter que para determinar cuál era la función que tomaría este papel. Renombré dicha función como `Payload`. Luego, subiendo en la jerarquía de llamadas, veo que están muy cerca una de otra:
 
 <img width="559" height="447" alt="imagen" src="https://github.com/user-attachments/assets/43f66340-bf1d-47f7-9acb-774116a8d7fb" />
 
-The function `EternalBlue` (*1*) is very close and before the function `Payload` (*2*), which makes sense, because first of all the malware checks if the exploit works and then sends the payload. So, the conditional jumps in (*3*) and (*4*) are the ones that I need to manipulate. I set a breakpoint in `0x00407582` to control step by step the execution.
+The function `EternalBlue` (*1*) is very close and before the function `Payload` (*2*). This ordering is consistent with my hypothesis that the sample first attempts the exploitation and then sends the payload. So, the conditional jumps in (*3*) and (*4*) are the ones that I need to manipulate. I set a breakpoint in `0x00407582` to control the execution step by step.
 
 La función `EternalBlue` (*1*) se halla muy cerca y antes de la función `Payload` (*2*), lo cual tendría sentido, porque primero se comprueba que funciona el exploit y luego se manda el payload. Por lo tanto, los saltos condicionales en (*3*) y (*4*) son los que hay manipular. Establezco un breakpoint en `0x00407582` para controlar paso a paso la ejecución del programa.
 
-However, the breakpoint never activates when the malware runs and automatically the debugger shows that the debugging ended, but all the other process were made: the second stage was released and the encryption started successfully. Having that in mind, and inspecting more carefully, I realised that after the successful execution of the killswitch (*1*), the PID of the process changes (*2*):
+However, the breakpoint never activates when the malware runs and automatically the debugger shows that the debugging ended, but all the other process already discovered in this analysis were made successfully. Having that in mind, and inspecting more carefully, I realised that after the successful execution of the killswitch (*1*), the PID of the process changes (*2*):
 
-Sin embargo, el breakpoint nunca se activa, pues al correr el programa aparece en el debugger que la ejecución ha terminado, pero el resto de procesos se ha llevado a cabo, ya que el proceso de cifrado de archivos sí que se realiza. Con esto en mente y mirando más cuidadosamente, me he dado cuenta de que tras ejecutar el killswitch con éxito (*1*), el PID del proceso cambia (*2*):
+Sin embargo, el breakpoint nunca se activa. Al correr el programa aparece en el debugger que la ejecución ha terminado, pero el resto de procesos ya descubiertos en este análisis sí que se llevan a cabo. Con esto en mente y mirando más cuidadosamente, me he dado cuenta de que tras ejecutar el killswitch con éxito (*1*), el PID del proceso cambia (*2*):
 
 <img width="651" height="196" alt="imagen" src="https://github.com/user-attachments/assets/287dcae5-821b-48d4-a61a-66ead44b553d" />
 
 <img width="427" height="172" alt="imagen" src="https://github.com/user-attachments/assets/230c7a88-1581-4555-9932-d4a5259e3bd9" />
 
-The details of the event show that the first stage of the malware is executed again with the flag `-m security`. Also the PID of the new process is the same seen in the last picture. However, I lose the control of the debugging process after the killswitch. The solution I found was to set a breakpoint in the call to Create Thread, stop the execution in any new thread created and check procmon every time. But the new process will run uncontrolled when starts, so the attachment should be quick and the process must be paused. The problem with this solution is that I have not any control over the initial moments of the execution of this new process. Nevertheless, I was fast enough to continue the investigation. Shortly after the new process starts, the old one ends:
+The details of the event show that the first stage of the malware is executed again with the flag `-m security`. Also the PID of the new process is the same seen in the last picture. However, I lose the control of the debugging process after the killswitch. This explained why control of the debugging session was lost after the kill-switch check: the execution relevant to the next stage was taking place in a different process.
 
-En los detalles del evento puede verse que se ejecuta de nuevo la primera fase del malware con el flag `-m security`. Se puede ver también que el PID del nuevo proceso coincide con el mostrado en la imagen anterior. El problema que me surge es que pierdo el control de la ejecución en el debugger tras la comprobación del killswitch. La solución que he encontrado ha sido poner un breakpoint en la función que crea nuevos hilos para que se pare la ejecución en ese punto, comprobar procmon cada vez y vincular rápidamente el debugger x32dbg al nuevo proceso, y pausarlo una vez vinculado. El problema de esto es que no tengo control sobre las primeros momentos de la ejecución de este nuevo proceso. No obstante, fui lo suficientemente rápido como para poder continuar la investigación. Al poco de iniciarse el nuevo proceso, se termina el anterior:
+En los detalles del evento puede verse que se ejecuta de nuevo la primera fase del malware con el flag `-m security`. Se puede ver también que el PID del nuevo proceso coincide con el mostrado en la imagen anterior. El problema que me surge es que pierdo el control de la ejecución en el debugger tras la comprobación del killswitch. Esto explica por qué se perdía el control de la sesión de debugging después de la comprobación del kill switch: la ejecución relevante para la siguiente etapa tenía lugar en un proceso diferente.
+
+The solution I used was to set a breakpoint in the call to Create Thread, stop the execution in any new thread created and check procmon every time. But the new process will run uncontrolled when starts, so the attachment should be quick and the process must be paused. The problem with this solution is that I have not any control over the initial moments of the execution of this new process. Nevertheless, I was fast enough to continue the investigation. Shortly after the new process starts, the old one ends:
+
+La solución que usé fue poner un breakpoint en la función que crea nuevos hilos para que se pare la ejecución en ese punto, comprobar procmon cada vez y vincular rápidamente el debugger x32dbg al nuevo proceso, y pausarlo una vez vinculado. El problema de esto es que no tengo control sobre las primeros momentos de la ejecución de este nuevo proceso. No obstante, fui lo suficientemente rápido como para poder continuar la investigación. Al poco de iniciarse el nuevo proceso, se termina el anterior:
 
 <img width="260" height="134" alt="imagen" src="https://github.com/user-attachments/assets/8e0c8188-17e8-4294-a84a-a20f6ce13582" />
 
