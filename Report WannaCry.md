@@ -546,7 +546,7 @@ Mediante el análisis avanzado se pueden ver ciertos aspectos de la muestra a ni
 
 <img width="637" height="632" alt="imagen" src="https://github.com/user-attachments/assets/1de95c47-3ee0-43b7-967e-c5582f30de49" />
 
-In the red highlighted *1*, the string that contains the URL is provided to the ESI register so it can be used as an argument. The calls for functions in *2* that will connect to the killswitch URL. After that, if there are no response from the website, the program will continue running the instructions in *3* normally. But if the request is answered, the instructions in *4* will be executed an the malware will stop and exit without any encryption of data.
+In the red highlighted *1*, the string that contains the URL is provided to the ESI register so it can be used as an argument. The calls for functions in *2* that will connect to the killswitch URL. After that, if there is no response from the website, the program will continue running the instructions in *3* normally. But if the request is answered, the instructions in *4* will be executed an the malware will stop and exit without any encryption of data.
 
 Puede verse en *1* que se pasa el string que contiene la url al registro ESI para que pueda ser usada luego como argumento. En *2* se ven las llamadas a las funciones que realizarán la comunicación web a dicha url. Luego, si no hay respuesta por parte de la web, irá por *3* y continuará ejecutándose de forma normal. Si hay respuesta, irá por *4* y el programa saldrá sin haber cifrado ninguno de los archivos.
 
@@ -676,20 +676,20 @@ Estos datos no contienen ninguna cadena que pueda tener sentido, más bien parec
 
 <img width="490" height="305" alt="imagen" src="https://github.com/user-attachments/assets/62a533bc-26f1-434b-b459-a9bbd800ed1a" />
 
-Making some research I found that this kind of network activity is related with the use of DoublePulsar, a backdoor, capable of injecting shellcode or running DLLs into memory. My guess is that the apparently base64 string is used to implant DoublePulsar, while other packets are the malware itself. Therefore, WannaCry uses EternalBlue to open the door to the vulnerable system and after that DoublePulsar implants itself in order to inject the malware and to run it.
+Making some research I found that this kind of network activity is related with the use of DoublePulsar, a backdoor, capable of injecting shellcode or running DLLs into memory.
 
-Investigando, descubrí que este tipo de actividad de red está asociada con el uso de DoublePulsar, un backdoor, capaz de inyectar shellcode o ejecutar DLLs en memoria. Mi suposición es que la aparente cadena en base64 sirva para la implantación de DoublePulsar, mientras que los otros paquetes sean el malware en sí mismo. Por lo tanto, el malware ha de usar EternalBlue para abrir la puerta al sistema vulnerable y a continuación DoublePulsar se implanta para inyectar luego el malware y ejecutarlo.
+Investigando, descubrí que este tipo de actividad de red está asociada con el uso de DoublePulsar, un backdoor, capaz de inyectar shellcode o ejecutar DLLs en memoria.
 
 DoublePulsar uses a not too complex XOR obfuscation. Knowing the used formula, which is public, it should be easy to obtain the payload snet. I manage to decrypt it using a PCAP file with the captured network traffic and the following script:
-```
-https://github.com/WithSecureLabs/doublepulsar-c2-traffic-decryptor/blob/master/decrypt_doublepulsar_traffic.py
-```
-I easily adapted the script from python 2 to python 3 using ChatGPT.
 
 DoublePulsar usa una ofuscación XOR no demasiado compleja. Conociendo la fórmula que se usa para ello, la cual es pública, debería ser sencillo obtener el payload enviado. Consigo desencriptarlo usando para ello un archivo PCAP con el tráfico capturado y el siguiente script:
+
 ```
 https://github.com/WithSecureLabs/doublepulsar-c2-traffic-decryptor/blob/master/decrypt_doublepulsar_traffic.py
 ```
+
+I easily adapted the script from python 2 to python 3 using ChatGPT.
+
 Adapté sin problema el script de python 2 a python 3 usando ChatGPT.
 
 The output file from the script is a PE executable that I named `payload`:
@@ -768,15 +768,15 @@ Combinando análisis estático y dinámico pude identificar las funciones que ll
 # Second-stage payload
 
 
-Using PEStudio it can be seen a suspicious resource, called R, which is an executable. It is the second phase of the malware and as we know in this point of the analysis, will have *tasksche.exe* as his name. I saved it for analysis.
+Using PEStudio it can be seen a suspicious resource, called R, which is an executable. It is the second phase of the malware and as we know in this point of the analysis, will have *tasksche.exe* as his name.
 
-Analizando la muestra con PEStudio puede verse que el recurso R es un ejecutable, el cual es la segunda fase y que tendrá por nombre *tasksche.exe*. Gracias a PEStudio puedo guardarlo para analizarlo:
+Analizando la muestra con PEStudio puede verse que el recurso R es un ejecutable, el cual es la segunda fase y que tendrá por nombre *tasksche.exe*.
 
 <img width="724" height="75" alt="imagen" src="https://github.com/user-attachments/assets/1e1bd88c-6b93-434b-b34d-949451e3b9ab" />
 
-That executable can be saved thanks to PEStudio. Inspecting him, there are a new resource inside, named XIA, which is a PKZIP compressed file:
+Thanks to PEStudio, that executable can be saved for analysis. Inspecting him, there are a new resource inside, named XIA, which is a PKZIP compressed file:
 
-Usando PEStudio para guardar este ejecutable y a su vez inspeccionándolo se puede ver que hay un archivo comprimido PKZIP dentro de él:
+Usando PEStudio se guardar este ejecutable para su análisis. Inspeccionándolo se puede ver que hay un archivo comprimido PKZIP llamado XIA dentro de él:
 
 <img width="666" height="102" alt="imagen" src="https://github.com/user-attachments/assets/a92b9ebc-cf09-4978-8e06-d147342c4601" />
 
@@ -802,14 +802,14 @@ These commands are posterior actions ran by the malware when the zip is extracte
 
 	- `attrib` it is a command from windows usable to change attributes of files or folders.
 	- `+h` means "to add the hidden attribute"
-	- `.` current directory
+	- `.` refers to current directory
 
 This command hides the current directory where the malware dropped the second stage, to avoid that the user could view the files or that malware components could be easily detectable.
 
  2. `icacls . /grant Everyone:F /T /C /Q`
 
-	- `icacls` manages permissions in Windows
-	- `.`  current directory
+	- `icacls` manages file and directory permissions in Windows
+	- `.`  refers to current directory
 	- `/grant Everyone:F`  grants full control permissions to the group “Everyone” (all users)
 	- `/T`  applies it recursively to all files and subfolders
 	- `/C`  continues even with errors
@@ -823,14 +823,14 @@ Estos comandos son acciones posteriores que el malware ejecuta en el sistema una
 
 	- `attrib` es un comando de Windows que sirve para cambiar atributos de archivos o carpetas
 	- `+h` significa “añadir el atributo oculto” (hidden)
-	- `.` se refiere al directorio actual
+	- `.` hace referencia al directorio actual
 
 Este comando oculta la carpeta actual donde se ha descomprimido el contenido del malware, para evitar que el usuario pueda ver los archivos o que los componentes del malware sean fácilmente detectables.
 
  2. `icacls . /grant Everyone:F /T /C /Q`
 
 	- `icacls` gestiona permisos en Windows
-	- `.`  directorio actual
+	- `.`  hace referencia al directorio actual
 	- `/grant Everyone:F`  concede permisos de control total (“Full”) al grupo “Everyone” (todos los usuarios)
 	- `/T`  aplica recursivamente a todos los archivos y subcarpetas
 	- `/C`  continúa aunque haya errores
@@ -838,16 +838,16 @@ Este comando oculta la carpeta actual donde se ha descomprimido el contenido del
 
 Cambia los permisos de toda la carpeta y su contenido para que cualquier usuario (y proceso) tenga control total y pueda actuar sin restricciones.
 
-Inside the compressed file there is the following files:
+Inside the compressed archive, the following files can be found:
 
-Dentro del archivo comprimido tenemos los siguientes archivos:
+Dentro del archivo comprimido pueden encontrarse los siguientes archivos:
 
 <img width="631" height="246" alt="imagen" src="https://github.com/user-attachments/assets/f37d241c-74fc-46ef-8b56-e9012ea6c9df" />
 
-Each file can be checked using the tool detect-it-easy and changing the file extension:
+Each file can be checked using the tool detect-it-easy and changing the file extension where necessary:
 - **Folder msg**: contains .rtf files with the .wnry extension, which are explanatory notes, in different languages, with all the steps to follow in order to make the payment. Those notes are used by *Wana Decrypt0r 2.0*: 
 
-Se puede ver qué es cada archivo usando la herramienta detect-it-easy y luego cambiando la extensión:
+Se puede ver qué es cada archivo usando la herramienta detect-it-easy y luego cambiando la extensión cuando sea necesario:
 - **Carpeta msg**: contiene archivos .rtf con la extensión .wnry, los cuales tienen, en diferentes idiomas, una nota explicativa de la situación y de los pasos a seguir para realizar el pago. Estas notas serán usadas por el programa *Wana Decrypt0r 2.0*:
 
 <img width="337" height="236" alt="imagen" src="https://github.com/user-attachments/assets/40cf334a-502e-4299-9d7d-ff31d880e26e" />
@@ -864,19 +864,19 @@ Puede verse el mensaje en ruso, por ejemplo.
 
 <img width="779" height="534" alt="imagen" src="https://github.com/user-attachments/assets/a50111fc-7ce5-44e6-a1af-25a75545bc35" />
 
-- **c.wnry**: list of .onion sites, maybe related with the payment or with command and control functions. There is also a link to download Tor browser, possibly in case that it is not installed in the system:
+- **c.wnry**: list of .onion addresses, maybe related with the payment or with command and control functions, although I did not verify its possible use. There is also a link to download Tor browser, probably in case that it is not installed in the system:
 
-- **c.wnry**: lista de direcciones .onion, puede que para realizar el pago o bien para funciones de command and control. También hay un link para descargar el navegador Tor, probablemente en caso de que no estuviera presente en el sistema:
+- **c.wnry**: lista de direcciones .onion, puede que para realizar el pago o bien para funciones de command and control, aunque no he verificado su posible uso. También hay un link para descargar el navegador Tor, probablemente en caso de que no estuviera presente en el sistema:
 
 <img width="555" height="404" alt="imagen" src="https://github.com/user-attachments/assets/ba22a8df-985b-43c6-b506-67a9c720d1b2" />
 
 <img width="671" height="172" alt="imagen" src="https://github.com/user-attachments/assets/ddd29c74-4401-4f5c-bee2-6e8f04c563e9" />
 
 - **r.wnry**: text file with an explanatory message to the user which says that the user is a victim of a ransomware attack and must pay. 
-- **s.wnry**: compressed folder with some .dll files related with Tor.
+- **s.wnry**: compressed folder with some .dll files related to Tor.
 
 - **r.wnry**: archivo de texto con mensaje para el usuario explicándole que ha sido víctima de un ransomware y debe pagar.
-- **s.wnry**: carpeta comprimida en la que figuran diferentes archivos .dll relacionados con Tor.
+- **s.wnry**: carpeta comprimida en la que figuran varios archivos .dll relacionados con Tor.
 
 <img width="201" height="272" alt="imagen" src="https://github.com/user-attachments/assets/331b181e-5cb1-4b7f-b490-aedc3bc29649" />
 
@@ -886,9 +886,9 @@ Puede verse el mensaje en ruso, por ejemplo.
 
 <img width="645" height="265" alt="imagen" src="https://github.com/user-attachments/assets/fedf4293-011e-4843-83eb-ec360204a9e1" />
 
-Trying to change the magic number to `MZ`, I do not observe any new information. Further investigation would be needed.
+Replacing the magic number to `MZ`, I do not observe any new information. Further investigation would be needed.
 
-Probando a cambiar el magic number por `MZ`, no se observa nueva información. No tengo claro para qué sirve este archivo, haría falta investigar más.
+Reemplazando el magic number por `MZ`, no se observa nueva información. No tengo claro para qué sirve este archivo, haría falta investigar más.
 
 - **taskdl.exe**: this executable has the following suspicious imports:
 	- **FindFirstFileW**
@@ -910,7 +910,7 @@ Las dos primeras se usan para buscar en directorio y la tercera para el borrado 
 
 <img width="245" height="97" alt="imagen" src="https://github.com/user-attachments/assets/d14c8157-bf6e-425b-91c0-a08149118f88" />
 
-Considering that `taskse.exe` runs only when is needed to run `@WanaDecryptor@.exe` again and closes after that, I would say that `tasksche.exe` checks running processes and executes `@WanaDecryptor@.exe` if `taskse.exe` is not running. But this is just a guess.
+Considering that `taskse.exe` runs only when is needed to run `@WanaDecryptor@.exe` again and closes after that, I would say that `tasksche.exe` checks running processes and executes `@WanaDecryptor@.exe` if `taskse.exe` is not running. But this is just a personal asumption.
 
 Teniendo en cuenta que `taskse.exe` se abre sólo cuando hace falta invocar a `@WanaDecryptor@.exe` de nuevo y luego se cierra, diría que `tasksche.exe` monitoriza la lista de procesos activos, y si no figura `@WanaDecryptor@.exe`, es cuando ejecuta `taskse.exe`. Pero esto es sólo una suposición por mi parte.
 
@@ -934,7 +934,7 @@ rule YaraCry {
     meta: 
         last_updated = "2026"
         author = "Me"
-        description = "Rule YARA WannaCry"
+        description = "Rule YARA WannaCry First Stage"
 
     strings:
         // Fill out identifying strings and other criteria
@@ -944,14 +944,14 @@ rule YaraCry {
         $string4 = "taskdl.exe"             ascii
         $string5 = "taskse.exe"             ascii
 
-        $url = "iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com" ascii
+        $killswitch = "iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com" ascii
 
         $magic_number = "MZ"                ascii
 
 
     condition:
         // Fill out the conditions that must be met to identify the binary
-        $magic_number at 0 and ($url or 1 of ($string*))
+        $magic_number at 0 and ($killswitch or 1 of ($string*))
 ```
 
 
@@ -960,11 +960,11 @@ rule YaraCry {
 
 Since this is not a formal analysis but a course conclusion, I can allow myself to explore other related approaches. Splunk is one of the leading SIEM tools of the market, and since it allows to collect, analyze and correlate network and systems data in real time, it is interesting to observe the obtained results when the sample is run in the lab. I analyzed system telemetry using the app "Sysmon app for Splunk" and the logs generated by Sysmon.
 
-Unfortunately, not all the known data, such as the creation of the encrypted files or other events, is collected. That might be due to data encryption, which can prevent logs from being sent, or to a lack of resources allocated to the Splunk server VM, which could cause problems with data ingestion, at least in my experience. However, it is a useful way to list relevant events in a preliminary way.
-
 Ya que esto no es un análisis formal sino la conclusión de un curso, puedo permitirme explorar otros caminos relacionados. Splunk es una de las principales herramientas SIEM del mercado, y ya que permite recopilar, analizar y correlacionar datos de red y sistemas en tiempo real, resulta interesante ver qué resultados nos ofrece al ejecutar la muestra en el laboratorio. He analizado la telemetría del equipo mediante la app "Sysmon app for Splunk" y los logs generados por Sysmon. 
 
-Desafortunadamente, no se recopilan datos de todos los eventos conocidos, como la creación de los archivos encriptados u otros. Esto puede deberse a la encriptación de los datos, lo cual impide que sean enviados, o a la falta de recursos asignados a la VM del servidor Splunk, lo que puede provocar problemas de ingesta de datos, al menos en mi experiencia. Sin embargo, sigue siendo una forma útil de listar eventos automáticamente de forma preliminar.
+Unfortunately, not all the known data, such as the creation of the encrypted files or other events, is collected. That might be due to data encryption, which can prevent logs from being sent, or to a lack of resources allocated to the Splunk server VM, which could cause problems with data ingestion, at least in my experience. However, it is a useful way to list relevant events in a preliminary way.
+
+Desafortunadamente, no se recopilan datos de todos los eventos conocidos, como la creación de los archivos encriptados u otros. Esto puede deberse al cifrado de los datos, lo cual impide que sean enviados, o a la falta de recursos asignados a la VM del servidor Splunk, lo que puede provocar problemas de ingesta de datos, al menos en mi experiencia. Sin embargo, sigue siendo una forma útil de listar eventos automáticamente de forma preliminar.
 
 
 ## Sysmon app for Splunk
@@ -975,9 +975,9 @@ Para usarla, hay que instalar sysmon en la VM objetivo (he usado el archivo de c
 
 <img width="1630" height="578" alt="imagen" src="https://github.com/user-attachments/assets/8453fa2a-83c5-4809-bef1-aa0eef98e518" />
 
-Also, thanks to those dashboards, specific events can be viewed, like, for example, the DNS call that it works as the killswitch:
+These dashboards also make it possible to inspect specific events. For example, the DNS request associated with the WannaCry kill switch can be observed directly:
 
-También en base a esos dashboard se puede acceder directamente a eventos concretos, como por ejemplo la llamada DNS que constituye el killswitch:
+Estos dashboards también permiten inspeccionar eventos concretos. Por ejemplo, se puede observar directamente la petición DNS asociada al kill switch de WannaCry:
 
 <img width="493" height="331" alt="imagen" src="https://github.com/user-attachments/assets/87e23f1e-6a74-44ed-bae3-0d86b1d836e4" />
 
@@ -987,15 +987,15 @@ O incluso se pueden ver otros comportamientos no percibidos hasta ahora en el an
 
 <img width="494" height="466" alt="imagen" src="https://github.com/user-attachments/assets/964d4242-56ac-4e54-90fb-fce1deba6d6e" />
 
-Another interesting section is about register-level operations. Here I found the register created to run *tasksche.exe* at boot, which I already talked about in the host-based indicators section, and a new service:
+Another interesting section is about registry-related operations. Here I found the register created to run *tasksche.exe* at boot, which I already talked about in the host-based indicators section. Additionally, another new service can be observed:
 
-Otra sección que puede verse es la de operaciones a nivel de registro. Aquí encuentro el registro creado para ejecutar *tasksche.exe* al inicio, registro ya comentado en la parte de indicadores basados en host, y otro servicio nuevo:
+Otra sección que puede verse es la de operaciones a nivel de registro de Windows. Aquí encuentro el registro creado para ejecutar *tasksche.exe* al inicio, que ya comentado en la parte de indicadores basados en host. Además, puede observarse otro servicio nuevo:
 
 <img width="489" height="140" alt="imagen" src="https://github.com/user-attachments/assets/cb2f7b9e-a253-4307-9457-2e5ec27ed920" />
 
-I did not previously detected the service *mssecsvc2.0*, it runs the first stage of WannaCry at the boot of the system:
+The service mssecsvc2.0, which I had not identified previously, is also created by WannaCry. It is configured to execute the first stage of the malware when Windows starts:
 
-El servicio **mssecsvc2.0** no lo había detectado previamente, y se encarga de ejecutar la primera fase del malware en el inicio del sistema:
+El servicio mssecsvc2.0, que no había identificado previamente, también es creado por WannaCry. Está configurado para ejecutar la primera fase del malware al inicio del sistema:
 
 <img width="550" height="215" alt="imagen" src="https://github.com/user-attachments/assets/d2a6fa60-94f9-407a-95d5-bc71a9655949" />
 
@@ -1008,3 +1008,11 @@ Start indica el tipo de arranque del servicio, mientras que el valor 2 indica qu
 As can be seen, it runs the original file of the malware at boot, which means that this is another persistence mechanism.
 
 Como se ve, ejecuta al inicio el archivo original del malware, por lo que este servicio es otro mecanismo más de persistencia.
+
+This finding is particularly interesting because it was not identified during the previous stages of the analysis and demonstrates the value of correlating telemetry from different tools.
+
+Este hallazgo resulta especialmente interesante porque no había sido identificado durante las fases anteriores del análisis y demuestra el valor de correlacionar la telemetría obtenida mediante diferentes herramientas.
+
+Overall, using Splunk and Sysmon provided an additional perspective on the behavior of the malware. Although the collected telemetry was not complete, it helped confirm previously identified indicators, such as the kill-switch DNS request and persistence mechanisms, while also revealing additional activity that had not been noticed during the initial static and dynamic analysis.
+
+En conjunto, el uso de Splunk y Sysmon proporcionó una perspectiva adicional sobre el comportamiento del malware. Aunque la telemetría recopilada no fue completa, permitió confirmar indicadores identificados anteriormente, como la petición DNS del kill switch y los mecanismos de persistencia, además de revelar actividad adicional que no había sido detectada durante los análisis estático y dinámico iniciales.
